@@ -7,13 +7,14 @@ public class ReleaseProperties extends AbstractProperties {
 
     private static final String FILENAME = "release.properties";
 
-    private ReleaseProperties(){}
+    private ReleaseProperties() {
+    }
 
     private static class Holder {
         private static final ReleaseProperties instance = new ReleaseProperties();
     }
 
-    public static ReleaseProperties getInstance(){
+    public static ReleaseProperties getInstance() {
         return Holder.instance;
     }
 

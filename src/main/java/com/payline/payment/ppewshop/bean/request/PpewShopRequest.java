@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.payline.payment.ppewshop.exception.InvalidDataException;
 
 public class PpewShopRequest {
     private ObjectMapper mapper;
-
 
 
     public PpewShopRequest() {
@@ -18,7 +18,12 @@ public class PpewShopRequest {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
-    public String toXml() throws JsonProcessingException {
-        return mapper.writeValueAsString(this);
+    public String toXml() {
+        try {
+            return mapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new InvalidDataException("Unable to create XML", e);
+
+        }
     }
 }

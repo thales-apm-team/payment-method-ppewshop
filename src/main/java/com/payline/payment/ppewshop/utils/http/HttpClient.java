@@ -1,7 +1,6 @@
 package com.payline.payment.ppewshop.utils.http;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.payline.payment.ppewshop.bean.configuration.RequestConfiguration;
 import com.payline.payment.ppewshop.bean.request.CheckStatusRequest;
 import com.payline.payment.ppewshop.bean.request.InitDossierRequest;
@@ -17,7 +16,6 @@ import com.payline.pmapi.logger.LogManager;
 import org.apache.http.Header;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -143,36 +141,12 @@ public class HttpClient {
         return strResponse;
     }
 
-
-    /**
-     * Manage GET API call
-     *
-     * @param url
-     * @param headers
-     * @return
-     */
-    StringResponse get(String url, Header[] headers) {
-        URI uri;
-        try {
-            // Add the createOrderId to the url
-            uri = new URI(url);
-        } catch (URISyntaxException e) {
-            throw new InvalidDataException(SERVICE_URL_ERROR, e);
-        }
-
-        final HttpGet httpGet = new HttpGet(uri);
-        httpGet.setHeaders(headers);
-
-        // Execute request
-        return this.execute(httpGet);
-    }
-
     /**
      * Manage Post API call
      *
-     * @param url
-     * @param headers
-     * @param body
+     * @param url     the url to call
+     * @param headers header(s) of the request
+     * @param body    the body of the request
      * @return
      */
     StringResponse post(String url, Header[] headers, StringEntity body) {
@@ -192,50 +166,49 @@ public class HttpClient {
         return this.execute(httpPost);
     }
 
-
+    /**
+     * @param configuration contains all request info
+     * @param request       request object needed to create the body
+     * @return the response body of the API call
+     */
     public CheckStatusResponse checkStatus(RequestConfiguration configuration, CheckStatusRequest request) {
-        try {
-            String body = request.toXml();
-            String url = configuration.getPartnerConfiguration().getProperty(Constants.PartnerConfigurationKeys.URL);
-            Header[] headers = createHeaders();
 
-            StringResponse stringResponse = post(url, headers, new StringEntity(body, StandardCharsets.UTF_8));
+        String body = request.toXml();
+        String url = configuration.getPartnerConfiguration().getProperty(Constants.PartnerConfigurationKeys.URL);
+        Header[] headers = createHeaders();
 
-            if (stringResponse.isSuccess()) {
-                return CheckStatusResponse.fromXml(stringResponse.getContent());
-            } else {
-                PpewShopResponseKO responseKO = PpewShopResponseKO.fromXml(stringResponse.getContent());
-                LOGGER.error(responseKO.getErrorDescription());
-                throw new PluginException(responseKO.getErrorCode(), responseKO.getFailureCauseFromErrorCode());
-            }
-        } catch (JsonProcessingException e) {
-            throw new PluginException("");// todo ecrire un message d'erreur
-        } catch (IOException e) {
-            throw new PluginException(" ");// todo ecrire un message d'erreur
+        StringResponse stringResponse = post(url, headers, new StringEntity(body, StandardCharsets.UTF_8));
+
+        if (stringResponse.isSuccess()) {
+            return CheckStatusResponse.fromXml(stringResponse.getContent());
+        } else {
+            PpewShopResponseKO responseKO = PpewShopResponseKO.fromXml(stringResponse.getContent());
+            LOGGER.error(responseKO.getErrorDescription());
+            throw new PluginException(responseKO.getErrorCode(), responseKO.getFailureCauseFromErrorCode());
         }
     }
 
-
+    /**
+     * @param configuration contains all request info
+     * @param request       request object needed to create the body
+     * @return the response body of the API call
+     */
     public InitDossierResponse initDossier(RequestConfiguration configuration, InitDossierRequest request) {
-        try {
-            String body = request.toXml();
-            String url = configuration.getPartnerConfiguration().getProperty(Constants.PartnerConfigurationKeys.URL);
-            Header[] headers = createHeaders();
 
-            StringResponse stringResponse = post(url, headers, new StringEntity(body, StandardCharsets.UTF_8));
+        String body = request.toXml();
+        String url = configuration.getPartnerConfiguration().getProperty(Constants.PartnerConfigurationKeys.URL);
+        Header[] headers = createHeaders();
 
-            if (stringResponse.isSuccess()) {
-                return InitDossierResponse.fromXml(stringResponse.getContent());
-            } else {
-                PpewShopResponseKO responseKO = PpewShopResponseKO.fromXml(stringResponse.getContent());
-                LOGGER.error(responseKO.getErrorDescription());
-                throw new PluginException(responseKO.getErrorCode(), responseKO.getFailureCauseFromErrorCode());
-            }
-        } catch (JsonProcessingException e) {
-            throw new PluginException("");// todo ecrire un message d'erreur
-        } catch (IOException e) {
-            throw new PluginException(" ");// todo ecrire un message d'erreur
+        StringResponse stringResponse = post(url, headers, new StringEntity(body, StandardCharsets.UTF_8));
+
+        if (stringResponse.isSuccess()) {
+            return InitDossierResponse.fromXml(stringResponse.getContent());
+        } else {
+            PpewShopResponseKO responseKO = PpewShopResponseKO.fromXml(stringResponse.getContent());
+            LOGGER.error(responseKO.getErrorDescription());
+            throw new PluginException(responseKO.getErrorCode(), responseKO.getFailureCauseFromErrorCode());
         }
+
     }
 
 }

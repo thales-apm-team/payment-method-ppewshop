@@ -3,23 +3,22 @@ package com.payline.payment.ppewshop.bean.common;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({"transactionId", "merchandOrderReference", "statusCode", "creditAuthorizationNumber"})
+@JsonPropertyOrder({"transactionId", "merchandOrderReference", "statusCode", "creditAuthorizationNumber", "redirectionUrl"})
 public class CheckStatusOut {
     private String transactionId;
-
-    private String redirectionURL;
 
     @JsonProperty("merchandOrderReference")
     private MerchantOrderReference merchantOrderReference;
     private String statusCode;
     private String creditAuthorizationNumber;
+    private String redirectionUrl;
 
     public String getTransactionId() {
         return transactionId;
     }
 
-    public String getRedirectionURL(){
-        return this.redirectionURL;
+    public String getRedirectionUrl() {
+        return this.redirectionUrl;
     }
 
     public MerchantOrderReference getMerchantOrderReference() {
@@ -34,7 +33,7 @@ public class CheckStatusOut {
         return creditAuthorizationNumber;
     }
 
-    public static class StatusCode{
+    public static class StatusCode {
         public static final String A = "A";
         public static final String E = "E";
         public static final String I = "I";

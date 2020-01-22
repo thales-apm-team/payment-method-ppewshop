@@ -7,6 +7,7 @@ import com.payline.payment.ppewshop.bean.request.CheckStatusRequest;
 import com.payline.payment.ppewshop.bean.response.CheckStatusResponse;
 import com.payline.payment.ppewshop.exception.PluginException;
 import com.payline.payment.ppewshop.utils.Constants;
+import com.payline.payment.ppewshop.utils.PluginUtils;
 import com.payline.payment.ppewshop.utils.http.HttpClient;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.common.OnHoldCause;
@@ -51,47 +52,53 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                 , request.getPartnerConfiguration()
         );
 
-        return retrieveTransactionStatus(configuration, request.getTransactionId(), request.getBuyer().getEmail());
+        String partnerTransactionId = request.getTransactionId();
+        String buyerPaymentId = request.getBuyer().getEmail();
+        return retrieveTransactionStatus(configuration, partnerTransactionId, buyerPaymentId);
+
     }
 
-    private PaymentResponse retrieveTransactionStatus(RequestConfiguration configuration, String transactionId, String email) {
+    PaymentResponse retrieveTransactionStatus(RequestConfiguration configuration, String transactionId, String email) {
         PaymentResponse paymentResponse;
+
         try {
             CheckStatusRequest checkStatusRequest = createCheckStatusRequest(configuration, transactionId);
             CheckStatusResponse checkStatusResponse = client.checkStatus(configuration, checkStatusRequest);
 
-            String partnerTransactionId = checkStatusResponse.getCheckStatusOut().getTransactionId();
             String statusCode = checkStatusResponse.getCheckStatusOut().getStatusCode();
 
             switch (statusCode) {
                 case CheckStatusOut.StatusCode.A:
-                    paymentResponse = createPaymentResponseSuccess(partnerTransactionId
+                    paymentResponse = createPaymentResponseSuccess(transactionId
                             , statusCode
                             , email
                             , checkStatusResponse.getCheckStatusOut().getCreditAuthorizationNumber());
                     break;
                 case CheckStatusOut.StatusCode.E:
-                    paymentResponse = createPaymentResponseOnHold(partnerTransactionId, statusCode);
+                    paymentResponse = createPaymentResponseOnHold(transactionId, statusCode);
                     break;
                 case CheckStatusOut.StatusCode.I:
-                    paymentResponse = createResponseRedirect(partnerTransactionId
+                    paymentResponse = createResponseRedirect(transactionId
                             , statusCode
-                            , checkStatusResponse.getCheckStatusOut().getRedirectionURL());
+                            , checkStatusResponse.getCheckStatusOut().getRedirectionUrl());
                     break;
                 case CheckStatusOut.StatusCode.C:
-                    paymentResponse = createPaymentResponseFailure(partnerTransactionId, statusCode, FailureCause.CANCEL);
+                    paymentResponse = createPaymentResponseFailure(transactionId, statusCode, FailureCause.CANCEL);
                     break;
                 case CheckStatusOut.StatusCode.R:
-                    paymentResponse = createPaymentResponseFailure(partnerTransactionId, statusCode, FailureCause.REFUSED);
+                    paymentResponse = createPaymentResponseFailure(transactionId, statusCode, FailureCause.REFUSED);
                     break;
                 default:
-                    paymentResponse = createPaymentResponseFailure(partnerTransactionId, statusCode, FailureCause.INVALID_DATA);
+                    paymentResponse = createPaymentResponseFailure(transactionId, statusCode, FailureCause.INVALID_DATA);
                     break;
             }
 
         } catch (MalformedURLException e) {
-            LOGGER.error("Invalid URL format", e);
-            throw new PluginException(e.getMessage(), FailureCause.INVALID_DATA);
+            String errorMessage = "Invalid URL format";
+            LOGGER.error(errorMessage, e);
+            paymentResponse = createPaymentResponseFailure(transactionId
+                    , PluginUtils.truncate(errorMessage, PluginException.ERROR_CODE_MAX_LENGTH)
+                    , FailureCause.INVALID_DATA);
         } catch (PluginException e) {
             paymentResponse = e.toPaymentResponseFailureBuilder().build();
         } catch (RuntimeException e) {

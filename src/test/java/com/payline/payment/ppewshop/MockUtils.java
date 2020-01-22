@@ -21,6 +21,8 @@ public class MockUtils {
     private static String TRANSACTIONID = "123456789012345678901";
     private static String PARTNER_TRANSACTIONID = "098765432109876543210";
 
+    public static final String STATUS_CODE = "STATUS_CODE";
+
     public static final String templateCheckStatusRequest = "<checkStatus xmlns=\"urn:PPEWShopServiceV3\">\n" +
             "  <checkStatusIn>\n" +
             "    <merchantInformation>\n" +
@@ -84,14 +86,15 @@ public class MockUtils {
             "        <merchandOrderReference>\n" +
             "            <merchandOrderId>32552564</merchandOrderId>\n" +
             "        </merchandOrderReference>\n" +
-            "        <statusCode>R</statusCode>\n" +
+            "        <statusCode>STATUS_CODE</statusCode>\n" +
+            "        <redirectionUrl>http://redirectionUrl.com</redirectionUrl>\n" +
             "        <creditAuthorizationNumber>34600015</creditAuthorizationNumber>\n" +
             "    </checkStatusOut>\n" +
             "</checkStatusResponse>";
 
     public static final String templateResponseError = "<axis2ns1:PPEWShopServiceException xmlns:axis2ns1=\"urn:PPEWShopServiceV3\">" +
-            "<axis2ns1:errorCode>22002</axis2ns1:errorCode>" +
-            "<axis2ns1:errorDescription>errorDescription</axis2ns1:errorDescription>" +
+            "<axis2ns1:errorCode>ERROR_CODE</axis2ns1:errorCode>" +
+            "<axis2ns1:errorDescription>ERROR_DESCRIPTION</axis2ns1:errorDescription>" +
             "</axis2ns1:PPEWShopServiceException>";
 
     /**------------------------------------------------------------------------------------------------------------------*/
@@ -178,7 +181,7 @@ public class MockUtils {
      * Generate a valid Payline Amount.
      */
     public static com.payline.pmapi.bean.common.Amount aPaylineAmount() {
-        return aPaylineAmount(2000);
+        return aPaylineAmount(200000);
     }
 
     public static com.payline.pmapi.bean.common.Amount aPaylineAmount(int amount) {
@@ -239,8 +242,8 @@ public class MockUtils {
         Map<Buyer.PhoneNumberType, String> phoneNumbers = new HashMap<>();
         phoneNumbers.put(Buyer.PhoneNumberType.HOME, "0612345678");
         phoneNumbers.put(Buyer.PhoneNumberType.WORK, "0712345678");
-        phoneNumbers.put(Buyer.PhoneNumberType.CELLULAR, "0812345678");
-        phoneNumbers.put(Buyer.PhoneNumberType.BILLING, "0912345678");
+        phoneNumbers.put(Buyer.PhoneNumberType.CELLULAR, "0612345678");
+        phoneNumbers.put(Buyer.PhoneNumberType.BILLING, "0612345678");
 
         return phoneNumbers;
     }

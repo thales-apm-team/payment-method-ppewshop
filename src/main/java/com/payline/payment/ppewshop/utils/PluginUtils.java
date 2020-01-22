@@ -34,13 +34,12 @@ public class PluginUtils {
     }
 
     /**
-     * Return a string which was converted from cents to euro
+     * Return a string which was converted from cents to currency amount
      *
-     * @param amount
+     * @param amount the amount in cents
      * @return Amount as String
      */
     public static String createStringAmount(BigInteger amount, Currency currency) {
-        //récupérer le nombre de digits dans currency
         int nbDigits = currency.getDefaultFractionDigits();
 
         StringBuilder sb = new StringBuilder();
@@ -55,9 +54,19 @@ public class PluginUtils {
     }
 
     /**
+     * Check if a String is null or empty
+     *
+     * @param value the String to check
+     * @return
+     */
+    public static boolean isEmpty(String value) {
+        return value == null || value.isEmpty();
+    }
+
+    /**
      * Return a PPewShop civility mapped from Payline civility
      *
-     * @param civility
+     * @param civility Payline civility to convert
      * @return PPew civility (MME, MLE or MR)
      */
     public static String getCivilityFromPayline(String civility) {
@@ -83,13 +92,20 @@ public class PluginUtils {
         }
     }
 
-    // todo peut etre mettre les categories PPEW en constant
+
+    /**
+     * Return a PPEW category mapped from Payline category
+     *
+     * @param cat Payline category to convert
+     * @return
+     */
+    // todo maj le mapping quand la doc sera prete (remplacer les 000)
     public static String getGoodsCode(String cat) {
         if (cat == null) return null;
 
         switch (cat) {
             case "1":
-                return "616";
+                return "625";
             case "100010001":
                 return "625";
             case "100010002":
@@ -99,7 +115,7 @@ public class PluginUtils {
             case "2":
                 return "610";
             case "20001":
-                // todo
+                return "611";
             case "200010001":
                 return "624";
             case "200010002":
@@ -125,7 +141,7 @@ public class PluginUtils {
             case "400010002":
                 return "327";
             case "40002":
-                //Todo
+                return "320";
             case "400020001":
                 return "323";
             case "400020002":
@@ -141,29 +157,29 @@ public class PluginUtils {
             case "5":
                 return "663";
             case "50001":
-                return "733";
+                return "913";
             case "500010001":
                 return "733";
             case "50002":
-                return "663";
+                return "913";
             case "50003":
                 return "663";
             case "500030001":
-                return "663";
+                return "737";
             case "50004":
                 return "663";
             case "500040001":
-                return "663";
+                return "738";
             case "500040002":
-                return "663";
+                return "739";
             case "500040003":
-                return "663";
+                return "740";
             case "500040004":
-                return "663";
+                return "741";
             case "599990001":
-                return "343";
+                return "941";
             case "599990002":
-                return "343";
+                return "912";
             case "6":
                 return "640";
             case "7":
@@ -175,13 +191,13 @@ public class PluginUtils {
             case "10":
                 return "660";
             case "11":
-                //todo
+                return "660";
             case "110001":
-                //todo
+                return "742";
             case "12":
                 return "330";
             case "120001":
-                return "330";
+                return "331";
             case "1200010001":
                 return "334";
             case "1200010002":
@@ -209,19 +225,19 @@ public class PluginUtils {
             case "1200080001":
                 return "660";
             case "13":
-                //todo
+                return "000";
             case "14":
                 return "660";
             case "15":
                 return "660";
             case "16":
-                //todo
+                return "000";
             case "17":
-                //todo
+                return "000";
             case "170001":
-                //todo
+                return "000";
             case "170002":
-                //todo
+                return "000";
             case "18":
                 return "660";
             case "19":
@@ -229,11 +245,11 @@ public class PluginUtils {
             case "20":
                 return "631";
             case "21":
-                //todo
+                return "000";
             case "22":
-                //todo
+                return "000";
             case "23":
-                //todo
+                return "000";
             case "24":
                 return "858";
             case "240001":
@@ -247,12 +263,12 @@ public class PluginUtils {
             case "26":
                 return "620";
             default:
-                return "foo"; // todo
+                return "000";
 
         }
     }
 
-    public static String cleanUrl(String url){
+    public static String cleanUrl(String url) {
         return url.replace("&amp;", "&");
     }
 

@@ -1,11 +1,14 @@
 package com.payline.payment.ppewshop.bean.response;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.payline.payment.ppewshop.exception.InvalidDataException;
 import com.payline.pmapi.bean.common.FailureCause;
 
 import java.io.IOException;
 
 public class PpewShopResponseKO {
+    private static final transient XmlMapper xmlMapper = new XmlMapper();
+
     private String errorCode;
     private String errorDescription;
 
@@ -17,9 +20,13 @@ public class PpewShopResponseKO {
         return errorDescription;
     }
 
-    public static PpewShopResponseKO fromXml(String xml) throws IOException {
-        XmlMapper xmlMapper = new XmlMapper();
-        return xmlMapper.readValue(xml, PpewShopResponseKO.class);
+    public static PpewShopResponseKO fromXml(String xml) {
+
+        try {
+            return xmlMapper.readValue(xml, PpewShopResponseKO.class);
+        } catch (IOException e) {
+            throw new InvalidDataException("Unable to parse XML ResponseKO", e);
+        }
     }
 
     public FailureCause getFailureCauseFromErrorCode() {

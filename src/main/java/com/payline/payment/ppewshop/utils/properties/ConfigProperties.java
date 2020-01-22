@@ -7,13 +7,14 @@ public class ConfigProperties extends AbstractProperties {
 
     private static final String FILENAME = "config.properties";
 
-    ConfigProperties(){}
+    ConfigProperties() {
+    }
 
     private static class Holder {
         private static final ConfigProperties instance = new ConfigProperties();
     }
 
-    public static ConfigProperties getInstance(){
+    public static ConfigProperties getInstance() {
         return Holder.instance;
     }
 

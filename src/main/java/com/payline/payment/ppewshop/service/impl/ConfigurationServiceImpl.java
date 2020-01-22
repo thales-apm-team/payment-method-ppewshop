@@ -6,6 +6,7 @@ import com.payline.payment.ppewshop.bean.request.CheckStatusRequest;
 import com.payline.payment.ppewshop.bean.response.PpewShopResponseKO;
 import com.payline.payment.ppewshop.exception.PluginException;
 import com.payline.payment.ppewshop.utils.Constants;
+import com.payline.payment.ppewshop.utils.PluginUtils;
 import com.payline.payment.ppewshop.utils.http.HttpClient;
 import com.payline.payment.ppewshop.utils.i18n.I18nService;
 import com.payline.payment.ppewshop.utils.properties.ReleaseProperties;
@@ -104,28 +105,29 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 , request.getPartnerConfiguration()
         );
         try {
+            Map<String, String> infos = request.getAccountInfo();
             // verify fields length
-            if (request.getAccountInfo().get(Constants.ContractConfigurationKeys.MERCHANT_CODE).isEmpty()) {
+            if (PluginUtils.isEmpty(infos.get(Constants.ContractConfigurationKeys.MERCHANT_CODE))) {
                 errors.put(Constants.ContractConfigurationKeys.MERCHANT_CODE
                         , i18n.getMessage(MERCHANT_CODE_ERROR_EMPTY, locale));
-            } else if (request.getAccountInfo().get(Constants.ContractConfigurationKeys.MERCHANT_CODE).length() != LENGTH) {
+            } else if (infos.get(Constants.ContractConfigurationKeys.MERCHANT_CODE).length() != LENGTH) {
                 errors.put(Constants.ContractConfigurationKeys.MERCHANT_CODE
                         , i18n.getMessage(MERCHANT_CODE_ERROR_LENGTH, locale));
             }
 
-            if (request.getAccountInfo().get(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER).isEmpty()) {
+            if (PluginUtils.isEmpty(infos.get(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER))) {
                 errors.put(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER
                         , i18n.getMessage(DISTRIBUTOR_NUMBER_ERROR_EMPTY, locale));
-            } else if (request.getAccountInfo().get(Constants.ContractConfigurationKeys.MERCHANT_CODE).length() != LENGTH) {
+            } else if (infos.get(Constants.ContractConfigurationKeys.MERCHANT_CODE).length() != LENGTH) {
                 errors.put(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER
                         , i18n.getMessage(DISTRIBUTOR_NUMBER_ERROR_LENGTH, locale));
             }
 
             // do a test call
             MerchantInformation merchantInformation = MerchantInformation.Builder.aMerchantInformation()
-                    .withMerchantCode(request.getAccountInfo().get(Constants.ContractConfigurationKeys.MERCHANT_CODE))
-                    .withDistributorNumber(request.getAccountInfo().get(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER))
-                    .withCountryCode(request.getAccountInfo().get(Constants.ContractConfigurationKeys.COUNTRY_CODE))
+                    .withMerchantCode(infos.get(Constants.ContractConfigurationKeys.MERCHANT_CODE))
+                    .withDistributorNumber(infos.get(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER))
+                    .withCountryCode(infos.get(Constants.ContractConfigurationKeys.COUNTRY_CODE))
                     .build();
 
             CheckStatusRequest checkStatusRequest = new CheckStatusRequest();
@@ -144,8 +146,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
                 } else if (PpewShopResponseKO.ErrorCode._12006.equalsIgnoreCase(e.getErrorCode())) {
                     // wrong distributor number
-                    errors.put(Constants.ContractConfigurationKeys.MERCHANT_CODE
-                            , i18n.getMessage(MERCHANT_CODE_ERROR_INVALID, locale));
+                    errors.put(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER
+                            , i18n.getMessage(DISTRIBUTOR_NUMBER_ERROR_INVALID, locale));
                 } else {
                     // another unintended error
                     errors.put(GENERIC_ERROR, e.getErrorCode());

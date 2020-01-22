@@ -43,52 +43,7 @@ public class PaymentServiceImpl implements PaymentService {
                     , request.getPartnerConfiguration()
             );
 
-            MerchantInformation merchantInformation = MerchantInformation.Builder.aMerchantInformation()
-                    .withMerchantCode(request.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.MERCHANT_CODE).getValue())
-                    .withDistributorNumber(request.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER).getValue())
-                    .withCountryCode(request.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.COUNTRY_CODE).getValue())
-                    .build();
-
-            MerchantConfiguration merchantConfiguration = MerchantConfiguration.Builder.aMerchantConfiguration()
-                    .withGuardBackUrl(request.getEnvironment().getNotificationURL())
-                    .withGuardPushUrl(request.getEnvironment().getRedirectionReturnURL())
-                    .build();
-
-            CustomerInformation customerInformation = CustomerInformation.Builder.aCustomerInformation()
-                    .withCustomerLanguage(request.getLocale().getISO3Country())
-                    .withTitle(PluginUtils.getCivilityFromPayline(request.getBuyer().getFullName().getCivility()))
-                    .withFirstName(request.getBuyer().getFullName().getFirstName())
-                    .withName(request.getBuyer().getFullName().getLastName())
-                    .withBirthDate(simpleDateFormat.format( request.getBuyer().getBirthday()))
-                    .withEmail(request.getBuyer().getEmail())
-                    .withAddressLine1(request.getBuyer().getAddressForType(Buyer.AddressType.BILLING).getStreet1())
-                    .withAddressLine2(request.getBuyer().getAddressForType(Buyer.AddressType.BILLING).getStreet2())
-                    .withCity(request.getBuyer().getAddressForType(Buyer.AddressType.BILLING).getCity())
-                    .withPostCode(request.getBuyer().getAddressForType(Buyer.AddressType.BILLING).getZipCode())
-                    .withCellPhoneNumber(request.getBuyer().getPhoneNumberForType(Buyer.PhoneNumberType.CELLULAR))
-                    .withPrivatePhoneNumber(request.getBuyer().getPhoneNumberForType(Buyer.PhoneNumberType.HOME))
-                    .withProfessionalPhoneNumber(request.getBuyer().getPhoneNumberForType(Buyer.PhoneNumberType.WORK))
-                    .build();
-
-            String category = PluginUtils.getGoodsCode(getMainCat(request.getOrder().getItems()));
-            OrderInformation orderInformation = OrderInformation.Builder.anOrderInformation()
-                    .withGoodsCode(category)
-                    .withPrice(PluginUtils.createStringAmount(request.getAmount().getAmountInSmallestUnit(), request.getAmount().getCurrency()))
-                    .withFinancialProductType(OrderInformation.CLA)
-                    .build();
-
-            MerchantOrderReference orderReference = MerchantOrderReference.Builder.aMerchantOrderReference()
-                    .withMerchantOrderId(request.getTransactionId())
-                    .withMerchantRef(request.getOrder().getReference())
-                    .build();
-
-            InitDossierRequest initDossierRequest = new InitDossierRequest();
-            initDossierRequest.getInitDossierIn().setMerchantInformation(merchantInformation);
-            initDossierRequest.getInitDossierIn().setMerchantConfiguration(merchantConfiguration);
-            initDossierRequest.getInitDossierIn().setCustomerInformation(customerInformation);
-            initDossierRequest.getInitDossierIn().setOrderInformation(orderInformation);
-            initDossierRequest.getInitDossierIn().setOrderReference(orderReference);
-
+            InitDossierRequest initDossierRequest = createInitDossierFromPaymentRequest(request);
             InitDossierResponse initDossierResponse = client.initDossier(configuration, initDossierRequest);
 
             PaymentResponseRedirect.RedirectionRequest redirectionRequest = PaymentResponseRedirect.RedirectionRequest.RedirectionRequestBuilder
@@ -112,8 +67,13 @@ public class PaymentServiceImpl implements PaymentService {
                     .build();
 
         } catch (MalformedURLException e) {
-            LOGGER.error("Invalid URL format", e);
-            throw new PluginException(e.getMessage(), FailureCause.INVALID_DATA);
+            String errorMessage = "Invalid URL format";
+            LOGGER.error(errorMessage, e);
+            return PaymentResponseFailure.PaymentResponseFailureBuilder
+                    .aPaymentResponseFailure()
+                    .withErrorCode(PluginUtils.truncate(errorMessage, PluginException.ERROR_CODE_MAX_LENGTH))
+                    .withFailureCause(FailureCause.INVALID_DATA)
+                    .build();
         } catch (PluginException e) {
             return e.toPaymentResponseFailureBuilder().build();
         } catch (RuntimeException e) {
@@ -124,6 +84,57 @@ public class PaymentServiceImpl implements PaymentService {
                     .withFailureCause(FailureCause.INTERNAL_ERROR)
                     .build();
         }
+    }
+
+
+    InitDossierRequest createInitDossierFromPaymentRequest(PaymentRequest request) {
+        MerchantInformation merchantInformation = MerchantInformation.Builder.aMerchantInformation()
+                .withMerchantCode(request.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.MERCHANT_CODE).getValue())
+                .withDistributorNumber(request.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER).getValue())
+                .withCountryCode(request.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.COUNTRY_CODE).getValue())
+                .build();
+
+        MerchantConfiguration merchantConfiguration = MerchantConfiguration.Builder.aMerchantConfiguration()
+                .withGuardBackUrl(request.getEnvironment().getNotificationURL())
+                .withGuardPushUrl(request.getEnvironment().getRedirectionReturnURL())
+                .build();
+
+        CustomerInformation customerInformation = CustomerInformation.Builder.aCustomerInformation()
+                .withCustomerLanguage(request.getLocale().getISO3Country())
+                .withTitle(PluginUtils.getCivilityFromPayline(request.getBuyer().getFullName().getCivility()))
+                .withFirstName(request.getBuyer().getFullName().getFirstName())
+                .withName(request.getBuyer().getFullName().getLastName())
+                .withBirthDate(simpleDateFormat.format(request.getBuyer().getBirthday()))
+                .withEmail(request.getBuyer().getEmail())
+                .withAddressLine1(request.getBuyer().getAddressForType(Buyer.AddressType.BILLING).getStreet1())
+                .withAddressLine2(request.getBuyer().getAddressForType(Buyer.AddressType.BILLING).getStreet2())
+                .withCity(request.getBuyer().getAddressForType(Buyer.AddressType.BILLING).getCity())
+                .withPostCode(request.getBuyer().getAddressForType(Buyer.AddressType.BILLING).getZipCode())
+                .withCellPhoneNumber(request.getBuyer().getPhoneNumberForType(Buyer.PhoneNumberType.CELLULAR))
+                .withPrivatePhoneNumber(request.getBuyer().getPhoneNumberForType(Buyer.PhoneNumberType.HOME))
+                .withProfessionalPhoneNumber(request.getBuyer().getPhoneNumberForType(Buyer.PhoneNumberType.WORK))
+                .build();
+
+        String category = PluginUtils.getGoodsCode(getMainCat(request.getOrder().getItems()));
+        OrderInformation orderInformation = OrderInformation.Builder.anOrderInformation()
+                .withGoodsCode(category)
+                .withPrice(PluginUtils.createStringAmount(request.getAmount().getAmountInSmallestUnit(), request.getAmount().getCurrency()))
+                .withFinancialProductType(OrderInformation.CLA)
+                .build();
+
+        MerchantOrderReference orderReference = MerchantOrderReference.Builder.aMerchantOrderReference()
+                .withMerchantOrderId(request.getTransactionId())
+                .withMerchantRef(request.getOrder().getReference())
+                .build();
+
+        InitDossierRequest initDossierRequest = new InitDossierRequest();
+        initDossierRequest.getInitDossierIn().setMerchantInformation(merchantInformation);
+        initDossierRequest.getInitDossierIn().setMerchantConfiguration(merchantConfiguration);
+        initDossierRequest.getInitDossierIn().setCustomerInformation(customerInformation);
+        initDossierRequest.getInitDossierIn().setOrderInformation(orderInformation);
+        initDossierRequest.getInitDossierIn().setOrderReference(orderReference);
+
+        return initDossierRequest;
     }
 
     /**

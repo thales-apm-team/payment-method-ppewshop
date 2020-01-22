@@ -1,12 +1,14 @@
 package com.payline.payment.ppewshop.bean.response;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.payline.payment.ppewshop.bean.common.CheckStatusOut;
+import com.payline.payment.ppewshop.exception.InvalidDataException;
 
 import java.io.IOException;
 
 public class CheckStatusResponse {
+    private static transient XmlMapper xmlMapper = new XmlMapper();
+
     private CheckStatusOut checkStatusOut;
 
     public CheckStatusResponse() {
@@ -17,8 +19,11 @@ public class CheckStatusResponse {
         return checkStatusOut;
     }
 
-    public static CheckStatusResponse fromXml(String xml) throws IOException {
-        XmlMapper xmlMapper = new XmlMapper();
-        return xmlMapper.readValue(xml, CheckStatusResponse.class);
+    public static CheckStatusResponse fromXml(String xml) {
+        try {
+            return xmlMapper.readValue(xml, CheckStatusResponse.class);
+        } catch (IOException e) {
+            throw new InvalidDataException("Unable to parse XML CheckStatusResponse", e);
+        }
     }
 }
