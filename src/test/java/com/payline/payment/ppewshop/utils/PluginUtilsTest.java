@@ -1,32 +1,27 @@
 package com.payline.payment.ppewshop.utils;
 
-import com.payline.payment.ppewshop.bean.response.PpewShopResponseKO;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.omg.CORBA.PUBLIC_MEMBER;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.Currency;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class PluginUtilsTest {
 
-    @BeforeEach
-    void setUp() {
-    }
 
-    @Test
-    void truncate() {
-    }
 
     @Test
     void inputStreamToString() {
+        String expected = "foo";
+        InputStream stream = new ByteArrayInputStream(expected.getBytes());
+
+        Assertions.assertEquals(expected, PluginUtils.inputStreamToString(stream));
     }
 
 
@@ -47,19 +42,17 @@ class PluginUtilsTest {
 
     @Test
     void testTruncate() {
+        Assertions.assertEquals("0123456789", PluginUtils.truncate("01234567890123456789", 10));
+        Assertions.assertEquals("01234567890123456789", PluginUtils.truncate("01234567890123456789", 60));
+        Assertions.assertEquals("", PluginUtils.truncate("", 30));
+        Assertions.assertNull(PluginUtils.truncate(null, 30));
     }
 
     @Test
-    void testCreateStringAmount() {
-    }
-
-    @Test
-    void getCivilityFromPayline() {
-    }
-
-    @Test
-    void getGoodsCode() {
-
+    void testIsEmpty(){
+        Assertions.assertTrue(PluginUtils.isEmpty(null));
+        Assertions.assertTrue(PluginUtils.isEmpty(""));
+        Assertions.assertFalse(PluginUtils.isEmpty("foo"));
     }
 
     @Test
@@ -70,12 +63,27 @@ class PluginUtilsTest {
         Assertions.assertEquals(expectedUrl, PluginUtils.cleanUrl(url));
     }
 
+    private static Stream<Arguments> civility_set() {
+        return Stream.of(
+                Arguments.of("1", "MME"),
+                Arguments.of("2", "MME"),
+                Arguments.of("3", "MLE"),
+                Arguments.of("4", "MR"),
+                Arguments.of("5", "MR"),
+                Arguments.of("6", "MME"),
+                Arguments.of("7", "MR"),
+                Arguments.of("8", "MR"),
+                Arguments.of("9", "MR"),
+                Arguments.of("10", "MR"),
+                Arguments.of("11", "MR"),
+                Arguments.of("12", "MR")
+        );
+    }
 
-
-
-
-    @Test
-    void testGetCivilityFromPayline() {
+    @ParameterizedTest
+    @MethodSource("civility_set")
+    void testGetCivilityFromPayline(String paylineCivility, String ppewCivility) {
+        Assertions.assertEquals(ppewCivility, PluginUtils.getCivilityFromPayline(paylineCivility));
     }
 
 
@@ -166,10 +174,9 @@ class PluginUtilsTest {
 
     @ParameterizedTest
     @MethodSource("category_set")
-    void getGoodsCodeTest(String paylineCategory, String PpewCategory){
+    void getGoodsCodeTest(String paylineCategory, String PpewCategory) {
         Assertions.assertEquals(PpewCategory, PluginUtils.getGoodsCode(paylineCategory));
     }
-
 
 
     @Test
