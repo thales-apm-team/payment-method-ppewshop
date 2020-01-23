@@ -9,7 +9,7 @@ import java.io.IOException;
 
 @JacksonXmlRootElement(namespace = "urn:PPEWShopServiceV3", localName = "initDossierResponse")
 public class InitDossierResponse {
-    private static final transient XmlMapper xmlMapper = new XmlMapper();
+    private static final XmlMapper xmlMapper = new XmlMapper();
 
     private InitDossierOut initDossierOut;
 

@@ -7,7 +7,7 @@ import com.payline.payment.ppewshop.exception.InvalidDataException;
 import java.io.IOException;
 
 public class CheckStatusResponse {
-    private static transient XmlMapper xmlMapper = new XmlMapper();
+    private static XmlMapper xmlMapper = new XmlMapper();
 
     private CheckStatusOut checkStatusOut;
 

@@ -27,7 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirectionService {
-    private static final Logger LOGGER = LogManager.getLogger(PaymentServiceImpl.class);
+    private static final Logger LOGGER = LogManager.getLogger(PaymentWithRedirectionServiceImpl.class);
 
     private HttpClient client = HttpClient.getInstance();
 

@@ -15,7 +15,9 @@ import com.payline.pmapi.bean.configuration.parameter.AbstractParameter;
 import com.payline.pmapi.bean.configuration.parameter.impl.InputParameter;
 import com.payline.pmapi.bean.configuration.parameter.impl.ListBoxParameter;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
+import com.payline.pmapi.logger.LogManager;
 import com.payline.pmapi.service.ConfigurationService;
+import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -24,6 +26,8 @@ import java.util.*;
 import static com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest.GENERIC_ERROR;
 
 public class ConfigurationServiceImpl implements ConfigurationService {
+    private static final Logger LOGGER = LogManager.getLogger(ConfigurationServiceImpl.class);
+
     private ReleaseProperties releaseProperties = ReleaseProperties.getInstance();
     private I18nService i18n = I18nService.getInstance();
     private HttpClient client = HttpClient.getInstance();
@@ -43,7 +47,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private static final String DISTRIBUTOR_NUMBER_ERROR_INVALID = "distributorNumber.error.invalid";
     private static final String COUNTRY_CODE_LABEL = "countryCode.label";
     private static final String COUNTRY_CODE_DESCRIPTION = "countryCode.description";
-    private static final String COUNTRY_CODE_ERROR_INVALID = "countryCode.error.invalid";
     private static final String FRA_KEY = "FRA";
     private static final String FRA_VAL = "country.fra";
     private static final String GBR_KEY = "GBR";
@@ -138,13 +141,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             client.checkStatus(configuration, checkStatusRequest);
 
         } catch (PluginException e) {
-            if (!PpewShopResponseKO.ErrorCode._21999.equalsIgnoreCase(e.getErrorCode())) {
-                if (PpewShopResponseKO.ErrorCode._22002.equalsIgnoreCase(e.getErrorCode())) {
+            if (!PpewShopResponseKO.ErrorCode.CODE_21999.equalsIgnoreCase(e.getErrorCode())) {
+                if (PpewShopResponseKO.ErrorCode.CODE_22002.equalsIgnoreCase(e.getErrorCode())) {
                     // wrong merchant code
                     errors.put(Constants.ContractConfigurationKeys.MERCHANT_CODE
                             , i18n.getMessage(MERCHANT_CODE_ERROR_INVALID, locale));
 
-                } else if (PpewShopResponseKO.ErrorCode._12006.equalsIgnoreCase(e.getErrorCode())) {
+                } else if (PpewShopResponseKO.ErrorCode.CODE_12006.equalsIgnoreCase(e.getErrorCode())) {
                     // wrong distributor number
                     errors.put(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER
                             , i18n.getMessage(DISTRIBUTOR_NUMBER_ERROR_INVALID, locale));
@@ -154,6 +157,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 }
             }
         } catch (RuntimeException e) {
+            LOGGER.error("Unexpected plugin error", e);
             errors.put(GENERIC_ERROR, e.getMessage());
         }
         return errors;

@@ -30,8 +30,7 @@ public class PaymentServiceImpl implements PaymentService {
     private static final Logger LOGGER = LogManager.getLogger(PaymentServiceImpl.class);
     private HttpClient client = HttpClient.getInstance();
 
-    private final String pattern = "MM-dd-yyyy";
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy");
 
 
     @Override
@@ -139,10 +138,10 @@ public class PaymentServiceImpl implements PaymentService {
 
     /**
      * Get the main category of a list of items
-     * The main category is the ategory having the maximum amount
+     * The main category is the category having the maximum amount
      *
-     * @param items
-     * @return
+     * @param items list of Payline item
+     * @return category having the maximum amount
      */
     String getMainCat(List<Order.OrderItem> items) {
         Map<String, BigInteger> categories = new HashMap<>();

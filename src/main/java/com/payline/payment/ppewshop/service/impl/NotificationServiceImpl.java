@@ -4,7 +4,6 @@ import com.payline.payment.ppewshop.bean.common.CheckStatusOut;
 import com.payline.payment.ppewshop.bean.response.CheckStatusResponse;
 import com.payline.payment.ppewshop.exception.PluginException;
 import com.payline.payment.ppewshop.utils.PluginUtils;
-import com.payline.payment.ppewshop.utils.http.HttpClient;
 import com.payline.pmapi.bean.common.*;
 import com.payline.pmapi.bean.notification.request.NotificationRequest;
 import com.payline.pmapi.bean.notification.response.NotificationResponse;
@@ -24,7 +23,6 @@ import java.util.Date;
 
 public class NotificationServiceImpl implements NotificationService {
     private static final Logger LOGGER = LogManager.getLogger(PaymentServiceImpl.class);
-    private HttpClient client = HttpClient.getInstance();
 
     @Override
     public NotificationResponse parse(NotificationRequest request) {
@@ -40,7 +38,6 @@ public class NotificationServiceImpl implements NotificationService {
             notificationResponseHandler = new TransactionStateChangedResponseHandler();
         }
 
-        TransactionStatus transactionStatus;
         String partnerTransactionId = "UNKNOWN";
         try {
             String xml = PluginUtils.inputStreamToString(request.getContent());

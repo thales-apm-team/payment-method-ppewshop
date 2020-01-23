@@ -34,6 +34,9 @@ public class CheckStatusOut {
     }
 
     public static class StatusCode {
+        private StatusCode() {
+        }
+
         public static final String A = "A";
         public static final String E = "E";
         public static final String I = "I";

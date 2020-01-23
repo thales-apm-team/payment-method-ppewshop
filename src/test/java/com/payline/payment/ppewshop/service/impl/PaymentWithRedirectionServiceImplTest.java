@@ -56,7 +56,7 @@ class PaymentWithRedirectionServiceImplTest {
 
     @ParameterizedTest
     @MethodSource("statusCode_set")
-    void retrieveTransactionStatus(String statusCode, Class responseClass) throws Exception {
+    void retrieveTransactionStatus(String statusCode, Class responseClass) {
         String xmlOK = MockUtils.templateCheckStatusResponse
                 .replace(MockUtils.STATUS_CODE, statusCode);
 
@@ -77,7 +77,7 @@ class PaymentWithRedirectionServiceImplTest {
     }
 
     @Test
-    void retrieveTransactionStatusExeption() throws Exception {
+    void retrieveTransactionStatusExeption() {
         // init Mock
         String xml = MockUtils.templateCheckStatusResponse.replace("http://redirectionUrl.com", "aMalformedUrl");
         CheckStatusResponse checkStatusResponse = CheckStatusResponse.fromXml(xml);
@@ -103,7 +103,7 @@ class PaymentWithRedirectionServiceImplTest {
 
     @Test
     void retrieveTransactionStatusException()  {
-        PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode._21999, FailureCause.INVALID_DATA);
+        PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode.CODE_21999, FailureCause.INVALID_DATA);
         Mockito.doThrow(exception).when(client).checkStatus(any(), any());
 
         RequestConfiguration configuration = new RequestConfiguration(

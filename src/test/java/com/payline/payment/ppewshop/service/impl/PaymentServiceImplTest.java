@@ -39,7 +39,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void paymentRequest() throws Exception {
+    void paymentRequest(){
         // init Mock
         InitDossierResponse initDossierResponse = InitDossierResponse.fromXml(MockUtils.templateInitDossierResponse);
         Mockito.doReturn(initDossierResponse).when(client).initDossier(Mockito.any(), Mockito.any());
@@ -56,7 +56,7 @@ class PaymentServiceImplTest {
     @Test
     void paymentRequestKO() {
         // init Mock
-        PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode._21999, FailureCause.INVALID_DATA);
+        PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode.CODE_21999, FailureCause.INVALID_DATA);
         Mockito.doThrow(exception).when(client).initDossier(any(), any());
 
         PaymentRequest request = MockUtils.aPaylinePaymentRequest();
@@ -66,7 +66,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void paymentRequestException() throws Exception {
+    void paymentRequestException() {
         // init Mock
         String xml = MockUtils.templateInitDossierResponse.replace("http://redirectionUrl.com", "aMalformedUrl");
         InitDossierResponse initDossierResponse = InitDossierResponse.fromXml(xml);

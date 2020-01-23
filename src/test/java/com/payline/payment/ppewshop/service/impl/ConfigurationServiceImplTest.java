@@ -58,7 +58,7 @@ class ConfigurationServiceImplTest {
     @Test
     void checkOK() {
         // create mock
-        PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode._21999, FailureCause.INVALID_DATA);
+        PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode.CODE_21999, FailureCause.INVALID_DATA);
         Mockito.doThrow(exception).when(client).checkStatus(any(), any());
 
         ContractParametersCheckRequest request = MockUtils.aContractParametersCheckRequest();
@@ -94,7 +94,7 @@ class ConfigurationServiceImplTest {
     @Test
     void checkMerchantCodeKO() {
         // create mock
-        PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode._22002, FailureCause.INVALID_DATA);
+        PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode.CODE_22002, FailureCause.INVALID_DATA);
         Mockito.doThrow(exception).when(client).checkStatus(any(), any());
 
         ContractParametersCheckRequest request = MockUtils.aContractParametersCheckRequest();
@@ -107,7 +107,7 @@ class ConfigurationServiceImplTest {
     @Test
     void checkDistributorNumberKO() {
         // create mock
-        PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode._12006, FailureCause.INVALID_DATA);
+        PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode.CODE_12006, FailureCause.INVALID_DATA);
         Mockito.doThrow(exception).when(client).checkStatus(any(), any());
 
         ContractParametersCheckRequest request = MockUtils.aContractParametersCheckRequest();
@@ -120,7 +120,7 @@ class ConfigurationServiceImplTest {
     @Test
     void checkKOOther() {
         // create mock
-        PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode._22003, FailureCause.INVALID_DATA);
+        PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode.CODE_22003, FailureCause.INVALID_DATA);
         Mockito.doThrow(exception).when(client).checkStatus(any(), any());
 
         ContractParametersCheckRequest request = MockUtils.aContractParametersCheckRequest();
