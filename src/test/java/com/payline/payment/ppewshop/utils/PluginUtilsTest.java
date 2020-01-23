@@ -15,7 +15,6 @@ import java.util.stream.Stream;
 class PluginUtilsTest {
 
 
-
     @Test
     void inputStreamToString() {
         String expected = "foo";
@@ -26,7 +25,7 @@ class PluginUtilsTest {
 
 
     @Test
-    public void createStringAmount() {
+    void createStringAmount() {
         BigInteger int1 = BigInteger.ZERO;
         BigInteger int2 = BigInteger.ONE;
         BigInteger int3 = BigInteger.TEN;
@@ -49,7 +48,7 @@ class PluginUtilsTest {
     }
 
     @Test
-    void testIsEmpty(){
+    void testIsEmpty() {
         Assertions.assertTrue(PluginUtils.isEmpty(null));
         Assertions.assertTrue(PluginUtils.isEmpty(""));
         Assertions.assertFalse(PluginUtils.isEmpty("foo"));
@@ -176,14 +175,5 @@ class PluginUtilsTest {
     @MethodSource("category_set")
     void getGoodsCodeTest(String paylineCategory, String PpewCategory) {
         Assertions.assertEquals(PpewCategory, PluginUtils.getGoodsCode(paylineCategory));
-    }
-
-
-    @Test
-    void testGetGoodsCode() {
-    }
-
-    @Test
-    void testCleanUrl() {
     }
 }
