@@ -2,6 +2,8 @@ package com.payline.payment.ppewshop.service.impl;
 
 import com.payline.payment.ppewshop.MockUtils;
 import com.payline.payment.ppewshop.bean.common.CheckStatusOut;
+import com.payline.payment.ppewshop.bean.response.CheckStatusResponse;
+import com.payline.payment.ppewshop.utils.http.HttpClient;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.common.FailureTransactionStatus;
 import com.payline.pmapi.bean.common.OnHoldTransactionStatus;
@@ -12,9 +14,7 @@ import com.payline.pmapi.bean.notification.response.impl.PaymentResponseByNotifi
 import com.payline.pmapi.bean.notification.response.impl.TransactionStateChangedResponse;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseOnHold;
-import com.payline.pmapi.bean.payment.response.impl.PaymentResponseRedirect;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseSuccess;
-import com.payline.pmapi.service.NotificationService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,19 +22,27 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
+import static org.mockito.ArgumentMatchers.any;
+
 class NotificationServiceImplTest {
     @InjectMocks
     private NotificationServiceImpl service = new NotificationServiceImpl();
 
+    @Mock
+    private HttpClient client = HttpClient.getInstance();
+
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.initMocks(this);
     }
-
 
 
     private static Stream<Arguments> statusCode_set() {
@@ -51,10 +59,14 @@ class NotificationServiceImplTest {
     @ParameterizedTest
     @MethodSource("statusCode_set")
     void parseStatusChanged(String statusCode, Class responseClass) {
-        String xml = MockUtils.templateCheckStatusResponse
+        NotificationRequest request = MockUtils.aPaylineNotificationRequestBuilder().withTransactionId("1").build();
+
+        String xmlOK = MockUtils.templateCheckStatusResponse
                 .replace(MockUtils.STATUS_CODE, statusCode);
-        InputStream stream = new ByteArrayInputStream(xml.getBytes());
-        NotificationRequest request = MockUtils.aPaylineNotificationRequestBuilder().withTransactionId("1").withContent(stream).build();
+
+        CheckStatusResponse checkStatusResponse = CheckStatusResponse.fromXml(xmlOK);
+        Mockito.doReturn(checkStatusResponse).when(client).checkStatus(any(), any());
+
 
         NotificationResponse response = service.parse(request);
 
@@ -64,9 +76,8 @@ class NotificationServiceImplTest {
     }
 
     @Test
-    void parseStatusChangedException(){
-        InputStream stream = new ByteArrayInputStream("thisIsNotXmlFormatted".getBytes());
-        NotificationRequest request = MockUtils.aPaylineNotificationRequestBuilder().withTransactionId("1").withContent(stream).build();
+    void parseStatusChangedException() {
+        NotificationRequest request = MockUtils.aPaylineNotificationRequestBuilder().withTransactionId("1").build();
 
         NotificationResponse response = service.parse(request);
         Assertions.assertEquals(TransactionStateChangedResponse.class, response.getClass());
@@ -74,7 +85,7 @@ class NotificationServiceImplTest {
         Assertions.assertEquals(FailureTransactionStatus.class, transactionStateChangedResponse.getTransactionStatus().getClass());
 
         FailureTransactionStatus transactionStatus = (FailureTransactionStatus) transactionStateChangedResponse.getTransactionStatus();
-        Assertions.assertEquals(FailureCause.INVALID_DATA, transactionStatus.getFailureCause());
+        Assertions.assertEquals(FailureCause.INTERNAL_ERROR, transactionStatus.getFailureCause());
 
     }
 
@@ -95,8 +106,14 @@ class NotificationServiceImplTest {
     void parseNotificationChanged(String statusCode, Class responseClass) {
         String xml = MockUtils.templateCheckStatusResponse
                 .replace(MockUtils.STATUS_CODE, statusCode);
-        InputStream stream = new ByteArrayInputStream(xml.getBytes());
-        NotificationRequest request = MockUtils.aPaylineNotificationRequestBuilder().withContent(stream).build();
+        NotificationRequest request = MockUtils.aPaylineNotificationRequestBuilder().build();
+
+        String xmlOK = MockUtils.templateCheckStatusResponse
+                .replace(MockUtils.STATUS_CODE, statusCode);
+
+        CheckStatusResponse checkStatusResponse = CheckStatusResponse.fromXml(xmlOK);
+        Mockito.doReturn(checkStatusResponse).when(client).checkStatus(any(), any());
+
 
         NotificationResponse response = service.parse(request);
 
@@ -106,9 +123,8 @@ class NotificationServiceImplTest {
     }
 
     @Test
-    void parseNotificationException(){
-        InputStream stream = new ByteArrayInputStream("thisIsNotXmlFormatted".getBytes());
-        NotificationRequest request = MockUtils.aPaylineNotificationRequestBuilder().withContent(stream).build();
+    void parseNotificationException() {
+        NotificationRequest request = MockUtils.aPaylineNotificationRequestBuilder().build();
 
         NotificationResponse response = service.parse(request);
 
@@ -116,7 +132,12 @@ class NotificationServiceImplTest {
         PaymentResponseByNotificationResponse paymentResponseByNotificationResponse = (PaymentResponseByNotificationResponse) response;
         Assertions.assertEquals(PaymentResponseFailure.class, paymentResponseByNotificationResponse.getPaymentResponse().getClass());
         PaymentResponseFailure responseFailure = (PaymentResponseFailure) paymentResponseByNotificationResponse.getPaymentResponse();
-        Assertions.assertEquals(FailureCause.INVALID_DATA, responseFailure.getFailureCause());
+        Assertions.assertEquals(FailureCause.INTERNAL_ERROR, responseFailure.getFailureCause());
     }
 
+    @Test
+    void getTransactionIdFromURL() {
+        String url = "http://wwww.this.is.an.url.com/transactionDeId=1234567890123&foo=bar";
+        Assertions.assertEquals("1234567890123", NotificationServiceImpl.getTransactionIdFromURL(url));
+    }
 }

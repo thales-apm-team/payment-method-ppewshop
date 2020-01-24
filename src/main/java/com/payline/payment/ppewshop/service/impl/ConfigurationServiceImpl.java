@@ -30,7 +30,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     private ReleaseProperties releaseProperties = ReleaseProperties.getInstance();
     private I18nService i18n = I18nService.getInstance();
-    private HttpClient client = HttpClient.getInstance();
+        private HttpClient client = HttpClient.getInstance();
 
 
     private static final int LENGTH = 10;

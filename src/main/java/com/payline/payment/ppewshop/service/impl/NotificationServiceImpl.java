@@ -1,9 +1,13 @@
 package com.payline.payment.ppewshop.service.impl;
 
 import com.payline.payment.ppewshop.bean.common.CheckStatusOut;
+import com.payline.payment.ppewshop.bean.common.MerchantInformation;
+import com.payline.payment.ppewshop.bean.configuration.RequestConfiguration;
+import com.payline.payment.ppewshop.bean.request.CheckStatusRequest;
 import com.payline.payment.ppewshop.bean.response.CheckStatusResponse;
 import com.payline.payment.ppewshop.exception.PluginException;
-import com.payline.payment.ppewshop.utils.PluginUtils;
+import com.payline.payment.ppewshop.utils.Constants;
+import com.payline.payment.ppewshop.utils.http.HttpClient;
 import com.payline.pmapi.bean.common.*;
 import com.payline.pmapi.bean.notification.request.NotificationRequest;
 import com.payline.pmapi.bean.notification.response.NotificationResponse;
@@ -22,11 +26,22 @@ import org.apache.logging.log4j.Logger;
 import java.util.Date;
 
 public class NotificationServiceImpl implements NotificationService {
-    private static final Logger LOGGER = LogManager.getLogger(PaymentServiceImpl.class);
+    private static final Logger LOGGER = LogManager.getLogger(NotificationServiceImpl.class);
+    private HttpClient client = HttpClient.getInstance();
+
+    private static final String PARTNER_TRANSACTION_ID_STRING = "transactionDeId=";
+    private static final int PARTNER_TRANSACTION_ID_LENGTH = 13;
+
 
     @Override
     public NotificationResponse parse(NotificationRequest request) {
         NotificationResponse notificationResponse;
+
+        RequestConfiguration configuration = new RequestConfiguration(
+                request.getContractConfiguration()
+                , request.getEnvironment()
+                , request.getPartnerConfiguration()
+        );
 
         final String transactionId = request.getTransactionId();
         NotificationResponseHandler notificationResponseHandler;
@@ -40,11 +55,20 @@ public class NotificationServiceImpl implements NotificationService {
 
         String partnerTransactionId = "UNKNOWN";
         try {
-            String xml = PluginUtils.inputStreamToString(request.getContent());
-            CheckStatusResponse checkStatusResponse = CheckStatusResponse.fromXml(xml);
-            partnerTransactionId = checkStatusResponse.getCheckStatusOut().getTransactionId();
+            // get the partner transactionId
+            partnerTransactionId = getTransactionIdFromURL(request.getPathInfo());
 
+            MerchantInformation merchantInformation = MerchantInformation.Builder.aMerchantInformation()
+                    .withMerchantCode(request.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.MERCHANT_CODE).getValue())
+                    .withDistributorNumber(request.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER).getValue())
+                    .withCountryCode(request.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.COUNTRY_CODE).getValue())
+                    .build();
 
+            CheckStatusRequest checkStatusRequest = new CheckStatusRequest();
+            checkStatusRequest.getCheckStatusIn().setTransactionId(partnerTransactionId);
+            checkStatusRequest.getCheckStatusIn().setMerchantInformation(merchantInformation);
+
+            CheckStatusResponse checkStatusResponse = client.checkStatus(configuration, checkStatusRequest);
             String statusCode = checkStatusResponse.getCheckStatusOut().getStatusCode();
             switch (statusCode) {
                 case CheckStatusOut.StatusCode.A:
@@ -247,5 +271,11 @@ public class NotificationServiceImpl implements NotificationService {
                     .withAction(TransactionStateChangedResponse.Action.AUTHOR_AND_CAPTURE)
                     .build();
         }
+    }
+
+    public static String getTransactionIdFromURL(String url) {
+
+        int startIndex = url.indexOf(PARTNER_TRANSACTION_ID_STRING) + PARTNER_TRANSACTION_ID_STRING.length();
+        return url.substring(startIndex, startIndex + PARTNER_TRANSACTION_ID_LENGTH);
     }
 }

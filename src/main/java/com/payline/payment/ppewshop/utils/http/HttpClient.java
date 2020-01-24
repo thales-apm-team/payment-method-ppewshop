@@ -1,6 +1,7 @@
 package com.payline.payment.ppewshop.utils.http;
 
 
+import com.payline.payment.ppewshop.bean.common.Warning;
 import com.payline.payment.ppewshop.bean.configuration.RequestConfiguration;
 import com.payline.payment.ppewshop.bean.request.CheckStatusRequest;
 import com.payline.payment.ppewshop.bean.request.InitDossierRequest;
@@ -10,6 +11,7 @@ import com.payline.payment.ppewshop.bean.response.PpewShopResponseKO;
 import com.payline.payment.ppewshop.exception.InvalidDataException;
 import com.payline.payment.ppewshop.exception.PluginException;
 import com.payline.payment.ppewshop.utils.Constants;
+import com.payline.payment.ppewshop.utils.PluginUtils;
 import com.payline.payment.ppewshop.utils.properties.ConfigProperties;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.logger.LogManager;
@@ -202,13 +204,17 @@ public class HttpClient {
         StringResponse stringResponse = post(url, headers, new StringEntity(body, StandardCharsets.UTF_8));
 
         if (stringResponse.isSuccess()) {
-            return InitDossierResponse.fromXml(stringResponse.getContent());
+            InitDossierResponse initDossierResponse = InitDossierResponse.fromXml(stringResponse.getContent());
+            Warning warning = initDossierResponse.getInitDossierOut().getWarning();
+            if (warning != null && !PluginUtils.isEmpty(warning.getWarningCode())) {
+                LOGGER.warn("{}: {}", warning.getClass(), warning.getWarningDescription());
+            }
+            return initDossierResponse;
         } else {
             PpewShopResponseKO responseKO = PpewShopResponseKO.fromXml(stringResponse.getContent());
             LOGGER.error(responseKO.getErrorDescription());
             throw new PluginException(responseKO.getErrorCode(), responseKO.getFailureCauseFromErrorCode());
         }
-
     }
 
 }

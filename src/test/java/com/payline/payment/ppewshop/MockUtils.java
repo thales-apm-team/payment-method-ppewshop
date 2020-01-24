@@ -14,6 +14,7 @@ import com.payline.pmapi.bean.refund.request.RefundRequest;
 import com.payline.pmapi.bean.reset.request.ResetRequest;
 import org.mockito.internal.util.reflection.FieldSetter;
 
+import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -219,7 +220,7 @@ public class MockUtils {
                 .build();
     }
 
-    public static Map<Buyer.AddressType, Buyer.Address> addresses(){
+    public static Map<Buyer.AddressType, Buyer.Address> addresses() {
         Map<Buyer.AddressType, Buyer.Address> addresses = new HashMap<>();
         addresses.put(Buyer.AddressType.BILLING, anAddress());
         addresses.put(Buyer.AddressType.DELIVERY, anAddress());
@@ -227,7 +228,7 @@ public class MockUtils {
         return addresses;
     }
 
-    public static Buyer.Address anAddress(){
+    public static Buyer.Address anAddress() {
         return Buyer.Address.AddressBuilder
                 .anAddress()
                 .withStreet1("street1")
@@ -238,7 +239,7 @@ public class MockUtils {
                 .build();
     }
 
-    public static Map<Buyer.PhoneNumberType, String> phoneNumbers(){
+    public static Map<Buyer.PhoneNumberType, String> phoneNumbers() {
         Map<Buyer.PhoneNumberType, String> phoneNumbers = new HashMap<>();
         phoneNumbers.put(Buyer.PhoneNumberType.HOME, "0612345678");
         phoneNumbers.put(Buyer.PhoneNumberType.WORK, "0712345678");
@@ -348,10 +349,11 @@ public class MockUtils {
     public static NotificationRequest.NotificationRequestBuilder aPaylineNotificationRequestBuilder() {
         return NotificationRequest.NotificationRequestBuilder.aNotificationRequest()
                 .withHeaderInfos(new HashMap<>())
-                .withPathInfo("thisIsAPath")
+                .withPathInfo("transactionDeId=1234567890123")
                 .withHttpMethod("POST")
                 .withContractConfiguration(aContractConfiguration())
                 .withPartnerConfiguration(aPartnerConfiguration())
+                .withContent(new ByteArrayInputStream("".getBytes()))
                 .withEnvironment(anEnvironment());
     }
 
