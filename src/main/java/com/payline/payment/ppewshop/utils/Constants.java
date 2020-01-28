@@ -43,6 +43,7 @@ public class Constants {
         }
     }
 
+    // TODO(code-review-spl): A quoi sert cette classe ?
     /**
      * Keys for the entries in PaymentFormContext data
      */

@@ -98,6 +98,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .withGuardPushUrl(request.getEnvironment().getRedirectionReturnURL())
                 .build();
 
+        // TODO(code-review-spl): Attention aux NullPointerException lors des appels à rallonge request.getTruc().getMachin().getToto()...
         CustomerInformation customerInformation = CustomerInformation.Builder.aCustomerInformation()
                 .withCustomerLanguage(request.getLocale().getISO3Country())
                 .withTitle(PluginUtils.getCivilityFromPayline(request.getBuyer().getFullName().getCivility()))

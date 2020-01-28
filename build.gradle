@@ -45,6 +45,8 @@ dependencies {
     compile group:'com.payline', name: 'payment-method-api', version: "$paymentMethodApiVersion"
     testImplementation group: 'com.payline', name: 'payment-method-integration', version: "$paymentMethodIntegrationVersion"
 
+    // TODO(code-review-SPL): "compile" est dépréciée. Il vaut mieux utiliser "implementation".
+    // TODO(code-review-SPL): @see https://docs.gradle.org/4.10.2/userguide/java_plugin.html#tab:configurations
     compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.8'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.0'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.0'

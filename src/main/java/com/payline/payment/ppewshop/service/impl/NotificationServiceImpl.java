@@ -84,6 +84,7 @@ public class NotificationServiceImpl implements NotificationService {
                     notificationResponse = notificationResponseHandler.failureResponse(transactionId, checkStatusResponse, FailureCause.CANCEL);
                     break;
                 case CheckStatusOut.StatusCode.R:
+                    // TODO(code-review-SPL): tu peux grouper ce "case" avec le CheckStatusOut.StatusCode.I
                     notificationResponse = notificationResponseHandler.failureResponse(transactionId, checkStatusResponse, FailureCause.REFUSED);
                     break;
                 default:
@@ -273,6 +274,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
+    // TODO(code-review-SPL): pourquoi une méthode statique ici ? Une méthode non-statique fait tout aussi bien le boulot, non ?
     public static String getTransactionIdFromURL(String url) {
 
         int startIndex = url.indexOf(PARTNER_TRANSACTION_ID_STRING) + PARTNER_TRANSACTION_ID_STRING.length();

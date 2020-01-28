@@ -104,7 +104,6 @@ public class HttpClient {
     }
     // --- Singleton Holder pattern + initialization END
 
-
     private Header[] createHeaders() {
         Header[] headers = new Header[2];
         headers[0] = new BasicHeader(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
@@ -112,7 +111,7 @@ public class HttpClient {
         return headers;
     }
 
-
+    // TODO(code-review-spl): Très peu de TU sur cette classe. Aucun ne passe dans cette méthode.
     /**
      * Send the request, with a retry system in case the client does not obtain a proper response from the server.
      *
@@ -143,6 +142,7 @@ public class HttpClient {
         return strResponse;
     }
 
+    // TODO(code-review-spl): Très peu de TU sur cette classe. Aucun ne passe dans cette méthode.
     /**
      * Manage Post API call
      *
@@ -168,6 +168,7 @@ public class HttpClient {
         return this.execute(httpPost);
     }
 
+    // TODO(code-review-spl): Très peu de TU sur cette classe. Aucun ne passe dans cette méthode.
     /**
      * @param configuration contains all request info
      * @param request       request object needed to create the body
@@ -190,6 +191,7 @@ public class HttpClient {
         }
     }
 
+    // TODO(code-review-spl): Très peu de TU sur cette classe. Aucun ne passe dans cette méthode.
     /**
      * @param configuration contains all request info
      * @param request       request object needed to create the body

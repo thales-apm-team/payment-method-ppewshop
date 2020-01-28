@@ -35,6 +35,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     private static final int LENGTH = 10;
 
+    // TODO(code-review-SPL): Définir une constante pour une chaîne à usage unique, l'utilité est discutable
     private static final String MERCHANT_CODE_LABEL = "merchantCode.label";
     private static final String MERCHANT_CODE_DESCRIPTION = "merchantCode.description";
     private static final String MERCHANT_CODE_ERROR_EMPTY = "merchantCode.error.empty";
@@ -141,6 +142,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             client.checkStatus(configuration, checkStatusRequest);
 
         } catch (PluginException e) {
+            // TODO(code-review-SPL): cette condition peut être mise à la fin, dans un "else if", à la place du "else" actuel
+            // TODO(code-review-SPL): de cette façon, on a un seul niveau de if/else au lieu de deux.
             if (!PpewShopResponseKO.ErrorCode.CODE_21999.equalsIgnoreCase(e.getErrorCode())) {
                 if (PpewShopResponseKO.ErrorCode.CODE_22002.equalsIgnoreCase(e.getErrorCode())) {
                     // wrong merchant code

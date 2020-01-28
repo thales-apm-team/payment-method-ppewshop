@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+// TODO(code-review-spl): Pas de TU sur cette classe, alors qu'ils existent dans les autres projets !! (regarde Equens si tu veux)
 /**
  * Simple POJO supporting the core elements of an HTTP response, in a more readable format (especially the content).
  */

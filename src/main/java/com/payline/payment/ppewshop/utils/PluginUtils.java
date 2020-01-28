@@ -269,6 +269,7 @@ public class PluginUtils {
     }
 
     public static String cleanUrl(String url) {
+        // TODO(code-review-spl): Méfie-toi, il n'y a pas que les "&" qui peuvent se retrouver encodés dans une URL
         return url.replace("&amp;", "&");
     }
 
