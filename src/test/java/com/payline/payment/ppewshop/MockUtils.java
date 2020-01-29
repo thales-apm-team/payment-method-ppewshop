@@ -12,11 +12,20 @@ import com.payline.pmapi.bean.paymentform.request.PaymentFormConfigurationReques
 import com.payline.pmapi.bean.paymentform.request.PaymentFormLogoRequest;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 import com.payline.pmapi.bean.reset.request.ResetRequest;
+import org.apache.http.Header;
+import org.apache.http.ProtocolVersion;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicStatusLine;
 import org.mockito.internal.util.reflection.FieldSetter;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 public class MockUtils {
     private static String TRANSACTIONID = "123456789012345678901";
@@ -427,9 +436,25 @@ public class MockUtils {
         return response;
     }
 
-    /*
-        Method specific to PPEWShop
+    /**
+     * Mock an HTTP Response with the given elements.
+     *
+     * @param statusCode The status code (ex: 200)
+     * @param statusMessage The status message (ex: "OK")
+     * @param content The response content/body
+     * @return A mocked HTTP response
      */
-
+    public static CloseableHttpResponse mockHttpResponse(int statusCode, String statusMessage, String content, Header[] headers){
+        CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+        doReturn( new BasicStatusLine( new ProtocolVersion("HTTP", 1, 1), statusCode, statusMessage) )
+                .when( response ).getStatusLine();
+        doReturn( new StringEntity( content, StandardCharsets.UTF_8 ) ).when( response ).getEntity();
+        if( headers != null && headers.length >= 1 ){
+            doReturn( headers ).when( response ).getAllHeaders();
+        } else {
+            doReturn( new Header[]{} ).when( response ).getAllHeaders();
+        }
+        return response;
+    }
 
 }

@@ -5,7 +5,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -75,4 +77,19 @@ public class StringResponse {
         return instance;
     }
 
+    @Override
+    public String toString() {
+        String ln = System.lineSeparator();
+        String str = "HTTP " + this.getStatusCode() + " " + this.getStatusMessage() + ln;
+
+        final List<String> strHeaders = new ArrayList<>();
+        this.headers.forEach((key, value) -> strHeaders.add(key + ": " + value));
+        str += String.join(ln, strHeaders);
+
+        if (this.content != null) {
+            str += ln + this.content;
+        }
+
+        return str;
+    }
 }

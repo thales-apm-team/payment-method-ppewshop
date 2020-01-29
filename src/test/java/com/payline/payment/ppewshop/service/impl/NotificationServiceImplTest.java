@@ -138,6 +138,6 @@ class NotificationServiceImplTest {
     @Test
     void getTransactionIdFromURL() {
         String url = "http://wwww.this.is.an.url.com/transactionDeId=1234567890123&foo=bar";
-        Assertions.assertEquals("1234567890123", NotificationServiceImpl.getTransactionIdFromURL(url));
+        Assertions.assertEquals("1234567890123", service.getTransactionIdFromURL(url));
     }
 }

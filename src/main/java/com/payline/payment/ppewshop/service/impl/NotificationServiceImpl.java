@@ -78,13 +78,11 @@ public class NotificationServiceImpl implements NotificationService {
                     notificationResponse = notificationResponseHandler.onHoldResponse(transactionId, checkStatusResponse);
                     break;
                 case CheckStatusOut.StatusCode.I:
+                case CheckStatusOut.StatusCode.R:
                     notificationResponse = notificationResponseHandler.failureResponse(transactionId, checkStatusResponse, FailureCause.REFUSED);
                     break;
                 case CheckStatusOut.StatusCode.C:
                     notificationResponse = notificationResponseHandler.failureResponse(transactionId, checkStatusResponse, FailureCause.CANCEL);
-                    break;
-                case CheckStatusOut.StatusCode.R:
-                    notificationResponse = notificationResponseHandler.failureResponse(transactionId, checkStatusResponse, FailureCause.REFUSED);
                     break;
                 default:
                     notificationResponse = notificationResponseHandler.failureResponse(transactionId, checkStatusResponse, FailureCause.INVALID_DATA);
@@ -273,7 +271,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    public static String getTransactionIdFromURL(String url) {
+    public String getTransactionIdFromURL(String url) {
 
         int startIndex = url.indexOf(PARTNER_TRANSACTION_ID_STRING) + PARTNER_TRANSACTION_ID_STRING.length();
         return url.substring(startIndex, startIndex + PARTNER_TRANSACTION_ID_LENGTH);

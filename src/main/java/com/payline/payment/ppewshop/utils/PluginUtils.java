@@ -268,6 +268,12 @@ public class PluginUtils {
         }
     }
 
+    /**
+     * replace &amp by & in URL. this is asked by PPEWShop.
+     * example url: https://wm-rt-speed.neuges.org/fr/vat/souscription?brandCode=2525011983&amp;NumVdr=1000764191&amp;typeCredit=cla&amp;transactionDeId=8a31baa000b
+     * @param url PPEWShop url to clean
+     * @return
+     */
     public static String cleanUrl(String url) {
         return url.replace("&amp;", "&");
     }

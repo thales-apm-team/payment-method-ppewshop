@@ -56,7 +56,7 @@ class BeanTests {
 
 
     @Test
-    void initDossierRequestTest() throws Exception {
+    void initDossierRequestTest() {
         MerchantInformation merchantInformation = MerchantInformation.Builder.aMerchantInformation()
                 .withMerchantCode(merchantCode)
                 .withDistributorNumber(distributorNumber)
@@ -98,7 +98,7 @@ class BeanTests {
     }
 
     @Test
-    void checkStatusRequestTest() throws Exception {
+    void checkStatusRequestTest() {
         MerchantInformation merchantInformation = MerchantInformation.Builder.aMerchantInformation()
                 .withMerchantCode(merchantCode)
                 .withDistributorNumber(distributorNumber)
@@ -113,7 +113,7 @@ class BeanTests {
     }
 
     @Test
-    void initDossierResponseOKTest() throws Exception {
+    void initDossierResponseOKTest() {
         InitDossierResponse response = InitDossierResponse.fromXml(MockUtils.templateInitDossierResponse);
 
         Assertions.assertNotNull(response.getInitDossierOut());
@@ -126,7 +126,7 @@ class BeanTests {
     }
 
     @Test
-    void checkStatusResponseOKTest() throws Exception {
+    void checkStatusResponseOKTest(){
         CheckStatusResponse response = CheckStatusResponse.fromXml(MockUtils.templateCheckStatusResponse);
 
         Assertions.assertNotNull(response.getCheckStatusOut());
@@ -137,7 +137,7 @@ class BeanTests {
     }
 
     @Test
-    void ResponseKOTest() throws Exception {
+    void ResponseKOTest() {
         PpewShopResponseKO responseKO = PpewShopResponseKO.fromXml(MockUtils.templateResponseError);
 
         Assertions.assertNotNull(responseKO);

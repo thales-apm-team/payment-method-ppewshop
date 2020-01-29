@@ -104,14 +104,12 @@ public class HttpClient {
     }
     // --- Singleton Holder pattern + initialization END
 
-
     private Header[] createHeaders() {
         Header[] headers = new Header[2];
         headers[0] = new BasicHeader(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
         headers[1] = new BasicHeader(CHARSET_KEY, CHARSET_VALUE);
         return headers;
     }
-
 
     /**
      * Send the request, with a retry system in case the client does not obtain a proper response from the server.

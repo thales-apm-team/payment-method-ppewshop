@@ -31,7 +31,6 @@ public class Constants {
         }
     }
 
-
     /**
      * Keys for the entries in RequestContext data.
      */
@@ -40,15 +39,6 @@ public class Constants {
 
         /* Static utility class : no need to instantiate it (Sonar bug fix) */
         private RequestContextKeys() {
-        }
-    }
-
-    /**
-     * Keys for the entries in PaymentFormContext data
-     */
-    public static class PaymentFormKeys {
-
-        private PaymentFormKeys() {
         }
     }
 

@@ -30,7 +30,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     private ReleaseProperties releaseProperties = ReleaseProperties.getInstance();
     private I18nService i18n = I18nService.getInstance();
-        private HttpClient client = HttpClient.getInstance();
+    private HttpClient client = HttpClient.getInstance();
 
 
     private static final int LENGTH = 10;
@@ -141,21 +141,20 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             client.checkStatus(configuration, checkStatusRequest);
 
         } catch (PluginException e) {
-            if (!PpewShopResponseKO.ErrorCode.CODE_21999.equalsIgnoreCase(e.getErrorCode())) {
-                if (PpewShopResponseKO.ErrorCode.CODE_22002.equalsIgnoreCase(e.getErrorCode())) {
-                    // wrong merchant code
-                    errors.put(Constants.ContractConfigurationKeys.MERCHANT_CODE
-                            , i18n.getMessage(MERCHANT_CODE_ERROR_INVALID, locale));
+            if (PpewShopResponseKO.ErrorCode.CODE_22002.equalsIgnoreCase(e.getErrorCode())) {
+                // wrong merchant code
+                errors.put(Constants.ContractConfigurationKeys.MERCHANT_CODE
+                        , i18n.getMessage(MERCHANT_CODE_ERROR_INVALID, locale));
 
-                } else if (PpewShopResponseKO.ErrorCode.CODE_12006.equalsIgnoreCase(e.getErrorCode())) {
-                    // wrong distributor number
-                    errors.put(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER
-                            , i18n.getMessage(DISTRIBUTOR_NUMBER_ERROR_INVALID, locale));
-                } else {
-                    // another unintended error
-                    errors.put(GENERIC_ERROR, e.getErrorCode());
-                }
+            } else if (PpewShopResponseKO.ErrorCode.CODE_12006.equalsIgnoreCase(e.getErrorCode())) {
+                // wrong distributor number
+                errors.put(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER
+                        , i18n.getMessage(DISTRIBUTOR_NUMBER_ERROR_INVALID, locale));
+            } else if (!PpewShopResponseKO.ErrorCode.CODE_21999.equalsIgnoreCase(e.getErrorCode())) {
+                // another unintended error
+                errors.put(GENERIC_ERROR, e.getErrorCode());
             }
+
         } catch (RuntimeException e) {
             LOGGER.error("Unexpected plugin error", e);
             errors.put(GENERIC_ERROR, e.getMessage());

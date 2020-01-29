@@ -4,6 +4,7 @@ import com.payline.payment.ppewshop.bean.common.*;
 import com.payline.payment.ppewshop.bean.configuration.RequestConfiguration;
 import com.payline.payment.ppewshop.bean.request.InitDossierRequest;
 import com.payline.payment.ppewshop.bean.response.InitDossierResponse;
+import com.payline.payment.ppewshop.exception.InvalidDataException;
 import com.payline.payment.ppewshop.exception.PluginException;
 import com.payline.payment.ppewshop.utils.Constants;
 import com.payline.payment.ppewshop.utils.PluginUtils;
@@ -97,6 +98,16 @@ public class PaymentServiceImpl implements PaymentService {
                 .withGuardBackUrl(request.getEnvironment().getNotificationURL())
                 .withGuardPushUrl(request.getEnvironment().getRedirectionReturnURL())
                 .build();
+
+        Buyer buyer = request.getBuyer();
+
+        if (buyer.getFullName() == null){
+            throw new InvalidDataException("paymentRequest.buyer.fullName is required");
+        }
+
+        if (buyer.getAddressForType(Buyer.AddressType.BILLING) == null){
+            throw new InvalidDataException("paymentRequest.buyer.address(BILLING) is required");
+        }
 
         CustomerInformation customerInformation = CustomerInformation.Builder.aCustomerInformation()
                 .withCustomerLanguage(request.getLocale().getISO3Country())
