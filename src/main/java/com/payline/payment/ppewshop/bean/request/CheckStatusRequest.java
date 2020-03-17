@@ -9,9 +9,10 @@ public class CheckStatusRequest extends PpewShopRequest {
     @JacksonXmlProperty(namespace = "urn:PPEWShopServiceV3")
     private CheckStatusIn checkStatusIn;
 
-    public CheckStatusRequest() {
-        super();
-        this.checkStatusIn = new CheckStatusIn();
+
+
+    public CheckStatusRequest(CheckStatusIn checkStatusIn) {
+        this.checkStatusIn = checkStatusIn;
     }
 
     public CheckStatusIn getCheckStatusIn() {

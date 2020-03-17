@@ -9,9 +9,8 @@ public class InitDossierRequest extends PpewShopRequest {
     @JacksonXmlProperty(namespace = "urn:PPEWShopServiceV3")
     private InitDossierIn initDossierIn;
 
-    public InitDossierRequest() {
-        super();
-        this.initDossierIn = new InitDossierIn();
+    public InitDossierRequest(InitDossierIn initDossierIn) {
+        this.initDossierIn = initDossierIn;
     }
 
     public InitDossierIn getInitDossierIn() {

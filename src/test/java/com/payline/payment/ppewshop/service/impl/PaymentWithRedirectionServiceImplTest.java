@@ -49,16 +49,15 @@ class PaymentWithRedirectionServiceImplTest {
                 Arguments.of(CheckStatusOut.StatusCode.E, PaymentResponseOnHold.class),
                 Arguments.of(CheckStatusOut.StatusCode.I, PaymentResponseRedirect.class),
                 Arguments.of(CheckStatusOut.StatusCode.R, PaymentResponseFailure.class),
-                Arguments.of(CheckStatusOut.StatusCode.C, PaymentResponseFailure.class),
-                Arguments.of("XXXXX", PaymentResponseFailure.class)
+                Arguments.of(CheckStatusOut.StatusCode.C, PaymentResponseFailure.class)
         );
     }
 
     @ParameterizedTest
     @MethodSource("statusCode_set")
-    void retrieveTransactionStatus(String statusCode, Class responseClass) {
+    void retrieveTransactionStatus(CheckStatusOut.StatusCode statusCode, Class responseClass) {
         String xmlOK = MockUtils.templateCheckStatusResponse
-                .replace(MockUtils.STATUS_CODE, statusCode);
+                .replace(MockUtils.STATUS_CODE, statusCode.name());
 
         CheckStatusResponse checkStatusResponse = CheckStatusResponse.fromXml(xmlOK);
         Mockito.doReturn(checkStatusResponse).when(client).checkStatus(any(), any());
@@ -77,9 +76,9 @@ class PaymentWithRedirectionServiceImplTest {
     }
 
     @Test
-    void retrieveTransactionStatusExeption() {
+    void retrieveTransactionStatusUrlException() {
         // init Mock
-        String xml = MockUtils.templateCheckStatusResponse.replace("http://redirectionUrl.com", "aMalformedUrl");
+        String xml = MockUtils.templateCheckStatusResponse.replace("http://redirectionUrl.com", "aMalformedUrl").replace(MockUtils.STATUS_CODE, "I");
         CheckStatusResponse checkStatusResponse = CheckStatusResponse.fromXml(xml);
         Mockito.doReturn(checkStatusResponse).when(client).checkStatus(Mockito.any(), Mockito.any());
 
@@ -103,7 +102,7 @@ class PaymentWithRedirectionServiceImplTest {
 
     @Test
     void retrieveTransactionStatusException()  {
-        PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode.CODE_21999, FailureCause.INVALID_DATA);
+        PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode.CODE_21999.code, FailureCause.INVALID_DATA);
         Mockito.doThrow(exception).when(client).checkStatus(any(), any());
 
         RequestConfiguration configuration = new RequestConfiguration(

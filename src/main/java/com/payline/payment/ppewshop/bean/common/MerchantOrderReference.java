@@ -13,6 +13,7 @@ public class MerchantOrderReference {
     private String merchantRef;
 
     public MerchantOrderReference() {
+        // Empty constructor needed by Jackson for the XML serialization
     }
 
     private MerchantOrderReference(Builder builder) {
@@ -25,8 +26,6 @@ public class MerchantOrderReference {
     }
 
     public static class Builder {
-        private static final int MERCHANT_ORDER_ID_LENGTH = 13;
-
         private String merchantOrderId;
         private String merchantRef;
 
@@ -38,7 +37,7 @@ public class MerchantOrderReference {
         }
 
         public Builder withMerchantOrderId(String merchantOrderId) {
-            this.merchantOrderId = PluginUtils.truncate(merchantOrderId, MERCHANT_ORDER_ID_LENGTH);
+            this.merchantOrderId = merchantOrderId;
             return this;
         }
 
