@@ -164,9 +164,22 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public ReleaseInformation getReleaseInformation() {
+        String date = releaseProperties.get("release.date");
+        String version = releaseProperties.get("release.version");
+
+        if (PluginUtils.isEmpty(date)){
+            LOGGER.error("Date is not defined");
+            throw new PluginException("Plugin error: Date is not defined");
+        }
+
+        if (PluginUtils.isEmpty(version)){
+            LOGGER.error("Version is not defined");
+            throw new PluginException("Plugin error: Version is not defined");
+        }
+
         return ReleaseInformation.ReleaseBuilder.aRelease()
-                .withDate(LocalDate.parse(releaseProperties.get("release.date"), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
-                .withVersion(releaseProperties.get("release.version"))
+                .withDate(LocalDate.parse(date, DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                .withVersion(version)
                 .build();
     }
 
