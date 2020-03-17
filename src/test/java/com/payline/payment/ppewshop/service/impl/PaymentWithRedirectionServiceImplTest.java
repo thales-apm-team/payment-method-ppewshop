@@ -77,7 +77,7 @@ class PaymentWithRedirectionServiceImplTest {
     }
 
     @Test
-    void retrieveTransactionStatusExeption() {
+    void retrieveTransactionStatusUrlException() {
         // init Mock
         String xml = MockUtils.templateCheckStatusResponse.replace("http://redirectionUrl.com", "aMalformedUrl");
         CheckStatusResponse checkStatusResponse = CheckStatusResponse.fromXml(xml);

@@ -77,20 +77,8 @@ public class PluginException extends RuntimeException {
     }
 
     /**
-     * Instantiate a builder for {@link RefundResponseFailure}.
-     * Returning a builder instead of the class instance allow subsequent complement,
-     * with other fields than 'failureCause' or 'errorCode', such as 'partnerTransactionId' for example.
-     *
-     * @return A pre-configured builder
-     */
-    public RefundResponseFailure.RefundResponseFailureBuilder toRefundResponseFailureBuilder() {
-        return RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
-                .withFailureCause(failureCause)
-                .withErrorCode(errorCode);
-    }
-
-    /**
      * Utility static method to build an error code from a {@link RuntimeException}.
+     * For example, if the RuntimeException is a NullPointerException, the message will be: "plugin error: NullPointerException"
      *
      * @param e The exception
      * @return A truncated errorCode to insert into any FailureResponse object.

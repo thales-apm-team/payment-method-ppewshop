@@ -13,6 +13,7 @@ public class MerchantOrderReference {
     private String merchantRef;
 
     public MerchantOrderReference() {
+        // Empty constructor needed by Jackson for the XML serialization
     }
 
     private MerchantOrderReference(Builder builder) {
