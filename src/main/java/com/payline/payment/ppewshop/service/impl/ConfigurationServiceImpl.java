@@ -1,5 +1,6 @@
 package com.payline.payment.ppewshop.service.impl;
 
+import com.payline.payment.ppewshop.bean.common.CheckStatusIn;
 import com.payline.payment.ppewshop.bean.common.MerchantInformation;
 import com.payline.payment.ppewshop.bean.configuration.RequestConfiguration;
 import com.payline.payment.ppewshop.bean.request.CheckStatusRequest;
@@ -32,8 +33,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private I18nService i18n = I18nService.getInstance();
     private HttpClient client = HttpClient.getInstance();
 
-
-    private static final int LENGTH = 10;
+    private static final int MERCHANT_CODE_LENGTH = 10;
+    private static final int DISTRIBUTOR_NUMBER_LENGTH = 10;
 
     private static final String MERCHANT_CODE_LABEL = "merchantCode.label";
     private static final String MERCHANT_CODE_DESCRIPTION = "merchantCode.description";
@@ -113,7 +114,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             if (PluginUtils.isEmpty(infos.get(Constants.ContractConfigurationKeys.MERCHANT_CODE))) {
                 errors.put(Constants.ContractConfigurationKeys.MERCHANT_CODE
                         , i18n.getMessage(MERCHANT_CODE_ERROR_EMPTY, locale));
-            } else if (infos.get(Constants.ContractConfigurationKeys.MERCHANT_CODE).length() != LENGTH) {
+            } else if (infos.get(Constants.ContractConfigurationKeys.MERCHANT_CODE).length() != MERCHANT_CODE_LENGTH) {
                 errors.put(Constants.ContractConfigurationKeys.MERCHANT_CODE
                         , i18n.getMessage(MERCHANT_CODE_ERROR_LENGTH, locale));
             }
@@ -121,7 +122,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             if (PluginUtils.isEmpty(infos.get(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER))) {
                 errors.put(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER
                         , i18n.getMessage(DISTRIBUTOR_NUMBER_ERROR_EMPTY, locale));
-            } else if (infos.get(Constants.ContractConfigurationKeys.MERCHANT_CODE).length() != LENGTH) {
+            } else if (infos.get(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER).length() != DISTRIBUTOR_NUMBER_LENGTH) {
                 errors.put(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER
                         , i18n.getMessage(DISTRIBUTOR_NUMBER_ERROR_LENGTH, locale));
             }
@@ -133,24 +134,27 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .withCountryCode(infos.get(Constants.ContractConfigurationKeys.COUNTRY_CODE))
                     .build();
 
-            CheckStatusRequest checkStatusRequest = new CheckStatusRequest();
-            checkStatusRequest.getCheckStatusIn().setTransactionId("0");
-            checkStatusRequest.getCheckStatusIn().setMerchantInformation(merchantInformation);
+            CheckStatusIn checkStatusIn = CheckStatusIn.Builder.aCheckStatusIn()
+                    .withTransactionId("0")
+                    .withMerchantInformation(merchantInformation)
+                    .build();
 
-            // call in order to get the intended ErrorMessage
+            CheckStatusRequest checkStatusRequest = new CheckStatusRequest(checkStatusIn);
+
+            // call in order to get an ErrorMessage related to a bad transaction Id
             client.checkStatus(configuration, checkStatusRequest);
 
         } catch (PluginException e) {
-            if (PpewShopResponseKO.ErrorCode.CODE_22002.equalsIgnoreCase(e.getErrorCode())) {
+            if (e.getErrorCode().equalsIgnoreCase(PpewShopResponseKO.ErrorCode.CODE_22002.code)) {
                 // wrong merchant code
                 errors.put(Constants.ContractConfigurationKeys.MERCHANT_CODE
                         , i18n.getMessage(MERCHANT_CODE_ERROR_INVALID, locale));
 
-            } else if (PpewShopResponseKO.ErrorCode.CODE_12006.equalsIgnoreCase(e.getErrorCode())) {
+            } else if (e.getErrorCode().equalsIgnoreCase(PpewShopResponseKO.ErrorCode.CODE_12006.code)) {
                 // wrong distributor number
                 errors.put(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER
                         , i18n.getMessage(DISTRIBUTOR_NUMBER_ERROR_INVALID, locale));
-            } else if (!PpewShopResponseKO.ErrorCode.CODE_21999.equalsIgnoreCase(e.getErrorCode())) {
+            } else if (!e.getErrorCode().equalsIgnoreCase(PpewShopResponseKO.ErrorCode.CODE_21999.code)) {
                 // another unintended error
                 errors.put(GENERIC_ERROR, e.getErrorCode());
             }

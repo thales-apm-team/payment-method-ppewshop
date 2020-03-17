@@ -1,5 +1,6 @@
 package com.payline.payment.ppewshop.service.impl;
 
+import com.payline.payment.ppewshop.bean.common.CheckStatusIn;
 import com.payline.payment.ppewshop.bean.common.CheckStatusOut;
 import com.payline.payment.ppewshop.bean.common.MerchantInformation;
 import com.payline.payment.ppewshop.bean.configuration.RequestConfiguration;
@@ -65,31 +66,30 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
             CheckStatusRequest checkStatusRequest = createCheckStatusRequest(configuration, transactionId);
             CheckStatusResponse checkStatusResponse = client.checkStatus(configuration, checkStatusRequest);
 
-            String statusCode = checkStatusResponse.getCheckStatusOut().getStatusCode();
-
+            CheckStatusOut.StatusCode statusCode = checkStatusResponse.getCheckStatusOut().getStatusCode();
             switch (statusCode) {
-                case CheckStatusOut.StatusCode.A:
+                case A:
                     paymentResponse = createPaymentResponseSuccess(transactionId
                             , statusCode
                             , email
                             , checkStatusResponse.getCheckStatusOut().getCreditAuthorizationNumber());
                     break;
-                case CheckStatusOut.StatusCode.E:
+                case E:
                     paymentResponse = createPaymentResponseOnHold(transactionId, statusCode);
                     break;
-                case CheckStatusOut.StatusCode.I:
+                case I:
                     paymentResponse = createResponseRedirect(transactionId
                             , statusCode
                             , checkStatusResponse.getCheckStatusOut().getRedirectionUrl());
                     break;
-                case CheckStatusOut.StatusCode.C:
-                    paymentResponse = createPaymentResponseFailure(transactionId, statusCode, FailureCause.CANCEL);
+                case C:
+                    paymentResponse = createPaymentResponseFailure(transactionId, statusCode.name(), FailureCause.CANCEL);
                     break;
-                case CheckStatusOut.StatusCode.R:
-                    paymentResponse = createPaymentResponseFailure(transactionId, statusCode, FailureCause.REFUSED);
+                case R:
+                    paymentResponse = createPaymentResponseFailure(transactionId, statusCode.name(), FailureCause.REFUSED);
                     break;
                 default:
-                    paymentResponse = createPaymentResponseFailure(transactionId, statusCode, FailureCause.INVALID_DATA);
+                    paymentResponse = createPaymentResponseFailure(transactionId, statusCode.name(), FailureCause.INVALID_DATA);
                     break;
             }
 
@@ -120,32 +120,35 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                 .withCountryCode(configuration.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.COUNTRY_CODE).getValue())
                 .build();
 
-        CheckStatusRequest checkStatusRequest = new CheckStatusRequest();
-        checkStatusRequest.getCheckStatusIn().setTransactionId(transactionId);
-        checkStatusRequest.getCheckStatusIn().setMerchantInformation(merchantInformation);
-        return checkStatusRequest;
+        CheckStatusIn checkStatusIn = CheckStatusIn.Builder
+                .aCheckStatusIn()
+                .withTransactionId(transactionId)
+                .withMerchantInformation(merchantInformation)
+                .build();
+
+        return new CheckStatusRequest(checkStatusIn);
     }
 
-    private PaymentResponseSuccess createPaymentResponseSuccess(String partnerTransactionId, String statusCode, String email, String additionalData) {
+    private PaymentResponseSuccess createPaymentResponseSuccess(String partnerTransactionId, CheckStatusOut.StatusCode statusCode, String email, String additionalData) {
         return PaymentResponseSuccess.PaymentResponseSuccessBuilder
                 .aPaymentResponseSuccess()
                 .withPartnerTransactionId(partnerTransactionId)
                 .withTransactionDetails(Email.EmailBuilder.anEmail().withEmail(email).build())
                 .withTransactionAdditionalData(additionalData)
-                .withStatusCode(statusCode)
+                .withStatusCode(statusCode.name())
                 .build();
     }
 
-    private PaymentResponseOnHold createPaymentResponseOnHold(String partnerTransactionId, String statusCode) {
+    private PaymentResponseOnHold createPaymentResponseOnHold(String partnerTransactionId, CheckStatusOut.StatusCode  statusCode) {
         return PaymentResponseOnHold.PaymentResponseOnHoldBuilder
                 .aPaymentResponseOnHold()
                 .withPartnerTransactionId(partnerTransactionId)
                 .withOnHoldCause(OnHoldCause.ASYNC_RETRY)
-                .withStatusCode(statusCode)
+                .withStatusCode(statusCode.name())
                 .build();
     }
 
-    private PaymentResponseRedirect createResponseRedirect(String partnerTransactionId, String statusCode, String url) throws MalformedURLException {
+    private PaymentResponseRedirect createResponseRedirect(String partnerTransactionId, CheckStatusOut.StatusCode  statusCode, String url) throws MalformedURLException {
         PaymentResponseRedirect.RedirectionRequest redirectionRequest = PaymentResponseRedirect.RedirectionRequest.RedirectionRequestBuilder
                 .aRedirectionRequest()
                 .withUrl(new URL(url))
@@ -155,7 +158,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
         return PaymentResponseRedirect.PaymentResponseRedirectBuilder
                 .aPaymentResponseRedirect()
                 .withPartnerTransactionId(partnerTransactionId)
-                .withStatusCode(statusCode)
+                .withStatusCode(statusCode.name())
                 .withRedirectionRequest(redirectionRequest)
                 .build();
     }

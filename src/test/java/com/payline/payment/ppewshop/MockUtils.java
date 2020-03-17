@@ -175,7 +175,7 @@ public class MockUtils {
                 .anOrderItem()
                 .withReference("foo")
                 .withAmount(aPaylineAmount())
-                .withQuantity((long) 1)
+                .withQuantity(1L)
                 .withCategory("1") // Informatique
                 .build());
 

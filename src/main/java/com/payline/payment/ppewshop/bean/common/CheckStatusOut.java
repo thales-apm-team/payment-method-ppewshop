@@ -9,7 +9,7 @@ public class CheckStatusOut {
 
     @JsonProperty("merchandOrderReference")
     private MerchantOrderReference merchantOrderReference;
-    private String statusCode;
+    private StatusCode statusCode;
     private String creditAuthorizationNumber;
     private String redirectionUrl;
 
@@ -25,7 +25,7 @@ public class CheckStatusOut {
         return merchantOrderReference;
     }
 
-    public String getStatusCode() {
+    public StatusCode getStatusCode() {
         return statusCode;
     }
 
@@ -33,14 +33,7 @@ public class CheckStatusOut {
         return creditAuthorizationNumber;
     }
 
-    public static class StatusCode {
-        private StatusCode() {
-        }
-
-        public static final String A = "A";
-        public static final String E = "E";
-        public static final String I = "I";
-        public static final String R = "R";
-        public static final String C = "C";
+    public enum StatusCode {
+        A, E, I, R, C;
     }
 }

@@ -90,9 +90,10 @@ class LogoPaymentFormConfigurationServiceTest {
     @Test
     void getLogo_nominal(){
         // given: a valid configuration
+        String contentType = "image/png";
         doReturn("test_logo.png").when( config ).get("logo.filename");
         doReturn("png").when( config ).get("logo.format");
-        doReturn("image/png").when( config ).get("logo.contentType");
+        doReturn(contentType).when( config ).get("logo.contentType");
 
         // when: calling method getLogo()
         PaymentFormLogo paymentFormLogo = testService.getLogo( "whatever", Locale.getDefault() );
@@ -100,6 +101,7 @@ class LogoPaymentFormConfigurationServiceTest {
         // then:
         assertNotNull( paymentFormLogo.getContentType() );
         assertNotNull( paymentFormLogo.getFile() );
+        assertEquals(contentType, paymentFormLogo.getContentType());
     }
 
     @Test

@@ -184,7 +184,7 @@ public class HttpClient {
         } else {
             PpewShopResponseKO responseKO = PpewShopResponseKO.fromXml(stringResponse.getContent());
             LOGGER.error(responseKO.getErrorDescription());
-            throw new PluginException(responseKO.getErrorCode(), responseKO.getFailureCauseFromErrorCode());
+            throw new PluginException(responseKO.getErrorCode().code, responseKO.getFailureCauseFromErrorCode());
         }
     }
 
@@ -211,7 +211,7 @@ public class HttpClient {
         } else {
             PpewShopResponseKO responseKO = PpewShopResponseKO.fromXml(stringResponse.getContent());
             LOGGER.error(responseKO.getErrorDescription());
-            throw new PluginException(responseKO.getErrorCode(), responseKO.getFailureCauseFromErrorCode());
+            throw new PluginException(responseKO.getErrorCode().code, responseKO.getFailureCauseFromErrorCode());
         }
     }
 

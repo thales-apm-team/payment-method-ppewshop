@@ -51,18 +51,17 @@ class NotificationServiceImplTest {
                 Arguments.of(CheckStatusOut.StatusCode.E, OnHoldTransactionStatus.class),
                 Arguments.of(CheckStatusOut.StatusCode.I, FailureTransactionStatus.class),
                 Arguments.of(CheckStatusOut.StatusCode.R, FailureTransactionStatus.class),
-                Arguments.of(CheckStatusOut.StatusCode.C, FailureTransactionStatus.class),
-                Arguments.of("XXXXX", FailureTransactionStatus.class)
+                Arguments.of(CheckStatusOut.StatusCode.C, FailureTransactionStatus.class)
         );
     }
 
     @ParameterizedTest
     @MethodSource("statusCode_set")
-    void parseStatusChanged(String statusCode, Class responseClass) {
+    void parseStatusChanged(CheckStatusOut.StatusCode statusCode, Class responseClass) {
         NotificationRequest request = MockUtils.aPaylineNotificationRequestBuilder().withTransactionId("1").build();
 
         String xmlOK = MockUtils.templateCheckStatusResponse
-                .replace(MockUtils.STATUS_CODE, statusCode);
+                .replace(MockUtils.STATUS_CODE, statusCode.name());
 
         CheckStatusResponse checkStatusResponse = CheckStatusResponse.fromXml(xmlOK);
         Mockito.doReturn(checkStatusResponse).when(client).checkStatus(any(), any());
@@ -96,20 +95,17 @@ class NotificationServiceImplTest {
                 Arguments.of(CheckStatusOut.StatusCode.E, PaymentResponseOnHold.class),
                 Arguments.of(CheckStatusOut.StatusCode.I, PaymentResponseFailure.class),
                 Arguments.of(CheckStatusOut.StatusCode.R, PaymentResponseFailure.class),
-                Arguments.of(CheckStatusOut.StatusCode.C, PaymentResponseFailure.class),
-                Arguments.of("XXXXX", PaymentResponseFailure.class)
+                Arguments.of(CheckStatusOut.StatusCode.C, PaymentResponseFailure.class)
         );
     }
 
     @ParameterizedTest
     @MethodSource("notification_set")
-    void parseNotificationChanged(String statusCode, Class responseClass) {
-        String xml = MockUtils.templateCheckStatusResponse
-                .replace(MockUtils.STATUS_CODE, statusCode);
+    void parseNotificationChanged(CheckStatusOut.StatusCode statusCode, Class responseClass) {
         NotificationRequest request = MockUtils.aPaylineNotificationRequestBuilder().build();
 
         String xmlOK = MockUtils.templateCheckStatusResponse
-                .replace(MockUtils.STATUS_CODE, statusCode);
+                .replace(MockUtils.STATUS_CODE, statusCode.name());
 
         CheckStatusResponse checkStatusResponse = CheckStatusResponse.fromXml(xmlOK);
         Mockito.doReturn(checkStatusResponse).when(client).checkStatus(any(), any());
@@ -137,7 +133,7 @@ class NotificationServiceImplTest {
 
     @Test
     void getTransactionIdFromURL() {
-        String url = "http://wwww.this.is.an.url.com/transactionDeId=1234567890123&foo=bar";
-        Assertions.assertEquals("1234567890123", service.getTransactionIdFromURL(url));
+        Assertions.assertEquals("1234567890123", service.getTransactionIdFromURL("http://wwww.this.is.an.url.com/transactionDeId=1234567890123&foo=bar"));
+        Assertions.assertEquals("1234567890123", service.getTransactionIdFromURL("http://wwww.this.is.an.url.com/transactionDeId=1234567890123"));
     }
 }

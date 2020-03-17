@@ -1,10 +1,7 @@
 package com.payline.payment.ppewshop.utils.http;
 
 import com.payline.payment.ppewshop.MockUtils;
-import com.payline.payment.ppewshop.bean.common.CustomerInformation;
-import com.payline.payment.ppewshop.bean.common.MerchantConfiguration;
-import com.payline.payment.ppewshop.bean.common.MerchantInformation;
-import com.payline.payment.ppewshop.bean.common.OrderInformation;
+import com.payline.payment.ppewshop.bean.common.*;
 import com.payline.payment.ppewshop.bean.configuration.RequestConfiguration;
 import com.payline.payment.ppewshop.bean.request.CheckStatusRequest;
 import com.payline.payment.ppewshop.bean.request.InitDossierRequest;
@@ -39,7 +36,7 @@ class HttpClientTest {
     void checkStatus() {
         StringResponse stringResponse = MockUtils.mockStringResponse(200
                 , "OK"
-                , MockUtils.templateCheckStatusResponse
+                , MockUtils.templateCheckStatusResponse.replace(MockUtils.STATUS_CODE, CheckStatusOut.StatusCode.A.name())
                 , null);
 
         Mockito.doReturn(stringResponse).when(client).post(any(), any(), any());
@@ -56,13 +53,22 @@ class HttpClientTest {
                 .withCountryCode("countryCode")
                 .build();
 
-        CheckStatusRequest request = new CheckStatusRequest();
-        request.getCheckStatusIn().setMerchantInformation(merchantInformation);
-        request.getCheckStatusIn().setTransactionId("transactionId");
+        CheckStatusIn checkStatusIn = CheckStatusIn.Builder
+                .aCheckStatusIn()
+                .withTransactionId("transactionId")
+                .withMerchantInformation(merchantInformation)
+                .build();
+
+        CheckStatusRequest request = new CheckStatusRequest(checkStatusIn);
 
         CheckStatusResponse response = client.checkStatus(configuration, request);
 
         Assertions.assertNotNull(response);
+        Assertions.assertNotNull(response.getCheckStatusOut());
+        Assertions.assertEquals( "1234567890",response.getCheckStatusOut().getTransactionId());
+        Assertions.assertEquals( CheckStatusOut.StatusCode.A,response.getCheckStatusOut().getStatusCode());
+        Assertions.assertEquals( "34600015",response.getCheckStatusOut().getCreditAuthorizationNumber());
+        Assertions.assertEquals( "32552564",response.getCheckStatusOut().getMerchantOrderReference().getMerchantOrderId());
 
         // assert the mock is working properly (to avoid false negative)
         verify( client, never() ).execute( any() );
@@ -89,9 +95,13 @@ class HttpClientTest {
                 .withCountryCode("countryCode")
                 .build();
 
-        CheckStatusRequest request = new CheckStatusRequest();
-        request.getCheckStatusIn().setMerchantInformation(merchantInformation);
-        request.getCheckStatusIn().setTransactionId("transactionId");
+        CheckStatusIn checkStatusIn = CheckStatusIn.Builder
+                .aCheckStatusIn()
+                .withTransactionId("transactionId")
+                .withMerchantInformation(merchantInformation)
+                .build();
+
+        CheckStatusRequest request = new CheckStatusRequest(checkStatusIn);
 
         Assertions.assertThrows(PluginException.class, () -> client.checkStatus(configuration, request));
 
@@ -145,15 +155,22 @@ class HttpClientTest {
                 .withFinancialProductType("financialProductType")
                 .build();
 
-        InitDossierRequest request = new InitDossierRequest();
-        request.getInitDossierIn().setMerchantInformation(merchantInformation);
-        request.getInitDossierIn().setMerchantConfiguration(merchantConfiguration);
-        request.getInitDossierIn().setCustomerInformation(customerInformation);
-        request.getInitDossierIn().setOrderInformation(orderInformation);
+        InitDossierIn dossierIn = InitDossierIn.Builder
+                .anInitDossier()
+                .withMerchantInformation(merchantInformation)
+                .withMerchantConfiguration(merchantConfiguration)
+                .withCustomerInformation(customerInformation)
+                .withOrderInformation(orderInformation)
+                .build();
 
+        InitDossierRequest request = new InitDossierRequest(dossierIn);
         InitDossierResponse response = client.initDossier(configuration, request);
 
         Assertions.assertNotNull(response);
+        Assertions.assertNotNull(response.getInitDossierOut());
+        Assertions.assertEquals( "1234567890",response.getInitDossierOut().getTransactionId());
+        Assertions.assertEquals( "http://redirectionUrl.com",response.getInitDossierOut().getRedirectionUrl());
+
     }
 
     @Test
@@ -202,12 +219,15 @@ class HttpClientTest {
                 .withFinancialProductType("financialProductType")
                 .build();
 
-        InitDossierRequest request = new InitDossierRequest();
-        request.getInitDossierIn().setMerchantInformation(merchantInformation);
-        request.getInitDossierIn().setMerchantConfiguration(merchantConfiguration);
-        request.getInitDossierIn().setCustomerInformation(customerInformation);
-        request.getInitDossierIn().setOrderInformation(orderInformation);
+        InitDossierIn dossierIn = InitDossierIn.Builder
+                .anInitDossier()
+                .withMerchantInformation(merchantInformation)
+                .withMerchantConfiguration(merchantConfiguration)
+                .withCustomerInformation(customerInformation)
+                .withOrderInformation(orderInformation)
+                .build();
 
+        InitDossierRequest request = new InitDossierRequest(dossierIn);
 
         Assertions.assertThrows(PluginException.class, () -> client.initDossier(configuration, request));
 

@@ -4,7 +4,6 @@ import com.payline.payment.ppewshop.utils.PluginUtils;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.paymentform.response.configuration.impl.PaymentFormConfigurationResponseFailure;
-import com.payline.pmapi.bean.refund.response.impl.RefundResponseFailure;
 
 /**
  * Generic exception which can be converted into the various ResponseFailure objects from the PM-API.
@@ -22,9 +21,7 @@ public class PluginException extends RuntimeException {
 
     public PluginException(String message, FailureCause failureCause) {
         super(message);
-        if (message == null || message.length() == 0 || failureCause == null) {
-            throw new IllegalStateException("PluginException must have a non-empty message and a failureCause");
-        }
+        checkMessageAndFailureCause(message, failureCause);
         this.errorCode = PluginUtils.truncate(message, ERROR_CODE_MAX_LENGTH);
         this.failureCause = failureCause;
     }
@@ -35,9 +32,7 @@ public class PluginException extends RuntimeException {
 
     public PluginException(String message, FailureCause failureCause, Exception cause) {
         super(message, cause);
-        if (message == null || message.length() == 0 || failureCause == null) {
-            throw new IllegalStateException("PluginException must have a non-empty message and a failureCause");
-        }
+        checkMessageAndFailureCause(message, failureCause);
         this.errorCode = PluginUtils.truncate(message, ERROR_CODE_MAX_LENGTH);
         this.failureCause = failureCause;
     }
@@ -48,6 +43,18 @@ public class PluginException extends RuntimeException {
 
     public FailureCause getFailureCause() {
         return failureCause;
+    }
+
+    /**
+     * Check if the Exception message and the FailureCause are not null or empty
+     *
+     * @param message      the Exception message
+     * @param failureCause the FailureCause associated to the Exception
+     */
+    private void checkMessageAndFailureCause(String message, FailureCause failureCause) {
+        if (PluginUtils.isEmpty(message) || failureCause == null) {
+            throw new IllegalStateException("PluginException must have a non-empty message and a failureCause");
+        }
     }
 
     /**

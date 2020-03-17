@@ -3,6 +3,7 @@ package com.payline.payment.ppewshop.bean.configuration;
 import com.payline.payment.ppewshop.exception.InvalidDataException;
 import com.payline.pmapi.bean.configuration.PartnerConfiguration;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
+import com.payline.pmapi.bean.notification.request.NotificationRequest;
 import com.payline.pmapi.bean.payment.ContractConfiguration;
 import com.payline.pmapi.bean.payment.Environment;
 
@@ -43,6 +44,10 @@ public class RequestConfiguration {
     }
 
     public static RequestConfiguration build(ContractParametersCheckRequest request) {
+        return new RequestConfiguration(request.getContractConfiguration(), request.getEnvironment(), request.getPartnerConfiguration());
+    }
+
+    public static RequestConfiguration build(NotificationRequest request) {
         return new RequestConfiguration(request.getContractConfiguration(), request.getEnvironment(), request.getPartnerConfiguration());
     }
 

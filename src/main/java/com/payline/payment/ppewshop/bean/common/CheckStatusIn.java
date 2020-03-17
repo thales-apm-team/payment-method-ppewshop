@@ -8,19 +8,39 @@ public class CheckStatusIn {
     @JacksonXmlProperty(namespace = "urn:PPEWShopServiceV3")
     private String transactionId;
 
-    public MerchantInformation getMerchantInformation() {
-        return merchantInformation;
+    public CheckStatusIn(Builder builder) {
+        this.transactionId = builder.transactionId;
+        this.merchantInformation = builder.merchantInformation;
     }
 
-    public void setMerchantInformation(MerchantInformation merchantInformation) {
-        this.merchantInformation = merchantInformation;
+    public MerchantInformation getMerchantInformation() {
+        return merchantInformation;
     }
 
     public String getTransactionId() {
         return transactionId;
     }
 
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
+    public static class Builder {
+        private MerchantInformation merchantInformation;
+        private String transactionId;
+
+        public static Builder aCheckStatusIn() {
+            return new Builder();
+        }
+
+        public Builder withTransactionId(String transactionId) {
+            this.transactionId = transactionId;
+            return this;
+        }
+
+        public Builder withMerchantInformation(MerchantInformation information) {
+            this.merchantInformation = information;
+            return this;
+        }
+
+        public CheckStatusIn build() {
+            return new CheckStatusIn(this);
+        }
     }
 }

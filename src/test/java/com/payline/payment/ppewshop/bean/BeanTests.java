@@ -1,10 +1,7 @@
 package com.payline.payment.ppewshop.bean;
 
 import com.payline.payment.ppewshop.MockUtils;
-import com.payline.payment.ppewshop.bean.common.CustomerInformation;
-import com.payline.payment.ppewshop.bean.common.MerchantConfiguration;
-import com.payline.payment.ppewshop.bean.common.MerchantInformation;
-import com.payline.payment.ppewshop.bean.common.OrderInformation;
+import com.payline.payment.ppewshop.bean.common.*;
 import com.payline.payment.ppewshop.bean.request.CheckStatusRequest;
 import com.payline.payment.ppewshop.bean.request.InitDossierRequest;
 import com.payline.payment.ppewshop.bean.response.CheckStatusResponse;
@@ -51,7 +48,7 @@ class BeanTests {
     private static final String merchandOrderId = "32552564";
     private static final String authorizationNumber = "34600015";
 
-    private static final String errorCode = "ERROR_CODE";
+    private static final String errorCode = "11001";
     private static final String errorDescription = "ERROR_DESCRIPTION";
 
 
@@ -88,11 +85,15 @@ class BeanTests {
                 .withFinancialProductType(financialProductType)
                 .build();
 
-        InitDossierRequest request = new InitDossierRequest();
-        request.getInitDossierIn().setMerchantInformation(merchantInformation);
-        request.getInitDossierIn().setMerchantConfiguration(merchantConfiguration);
-        request.getInitDossierIn().setCustomerInformation(customerInformation);
-        request.getInitDossierIn().setOrderInformation(orderInformation);
+        InitDossierIn dossierIn = InitDossierIn.Builder
+                .anInitDossier()
+                .withMerchantInformation(merchantInformation)
+                .withMerchantConfiguration(merchantConfiguration)
+                .withCustomerInformation(customerInformation)
+                .withOrderInformation(orderInformation)
+                .build();
+
+        InitDossierRequest request = new InitDossierRequest(dossierIn);
 
         Assertions.assertEquals(MockUtils.templateInitDossierRequest, request.toXml());
     }
@@ -105,9 +106,13 @@ class BeanTests {
                 .withCountryCode(countryCode)
                 .build();
 
-        CheckStatusRequest request = new CheckStatusRequest();
-        request.getCheckStatusIn().setMerchantInformation(merchantInformation);
-        request.getCheckStatusIn().setTransactionId(transactionId);
+        CheckStatusIn checkStatusIn = CheckStatusIn.Builder
+                .aCheckStatusIn()
+                .withTransactionId(transactionId)
+                .withMerchantInformation(merchantInformation)
+                .build();
+
+        CheckStatusRequest request = new CheckStatusRequest(checkStatusIn);
 
         Assertions.assertEquals(MockUtils.templateCheckStatusRequest, request.toXml());
     }
@@ -127,21 +132,21 @@ class BeanTests {
 
     @Test
     void checkStatusResponseOKTest(){
-        CheckStatusResponse response = CheckStatusResponse.fromXml(MockUtils.templateCheckStatusResponse);
+        CheckStatusResponse response = CheckStatusResponse.fromXml(MockUtils.templateCheckStatusResponse.replace(MockUtils.STATUS_CODE, CheckStatusOut.StatusCode.A.name()));
 
         Assertions.assertNotNull(response.getCheckStatusOut());
         Assertions.assertEquals(transactionId, response.getCheckStatusOut().getTransactionId());
         Assertions.assertEquals(merchandOrderId, response.getCheckStatusOut().getMerchantOrderReference().getMerchantOrderId());
-        Assertions.assertEquals(MockUtils.STATUS_CODE, response.getCheckStatusOut().getStatusCode());
+        Assertions.assertEquals(CheckStatusOut.StatusCode.A, response.getCheckStatusOut().getStatusCode());
         Assertions.assertEquals(authorizationNumber, response.getCheckStatusOut().getCreditAuthorizationNumber());
     }
 
     @Test
     void ResponseKOTest() {
-        PpewShopResponseKO responseKO = PpewShopResponseKO.fromXml(MockUtils.templateResponseError);
+        PpewShopResponseKO responseKO = PpewShopResponseKO.fromXml(MockUtils.templateResponseError.replace("ERROR_CODE", errorCode));
 
         Assertions.assertNotNull(responseKO);
-        Assertions.assertEquals(errorCode, responseKO.getErrorCode());
+        Assertions.assertEquals(errorCode, responseKO.getErrorCode().code);
         Assertions.assertEquals(errorDescription, responseKO.getErrorDescription());
     }
 
@@ -169,8 +174,7 @@ class BeanTests {
                 Arguments.of("21004", FailureCause.PAYMENT_PARTNER_ERROR),
                 Arguments.of("22001", FailureCause.INVALID_DATA),
                 Arguments.of("22002", FailureCause.INVALID_DATA),
-                Arguments.of("22003", FailureCause.INVALID_DATA),
-                Arguments.of("XXXXX", FailureCause.PARTNER_UNKNOWN_ERROR)
+                Arguments.of("22003", FailureCause.INVALID_DATA)
         );
     }
 
