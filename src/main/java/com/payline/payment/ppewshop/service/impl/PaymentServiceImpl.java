@@ -227,7 +227,6 @@ public class PaymentServiceImpl implements PaymentService {
      * @param cat Payline category to convert
      * @return
      */
-    // todo maj le mapping quand la doc sera prete (remplacer les 000)
     public static String getGoodsCode(String cat) {
         if (cat == null) return null;
 
