@@ -3,7 +3,6 @@ package com.payline.payment.ppewshop.bean.response;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.payline.payment.ppewshop.exception.InvalidDataException;
-import com.payline.payment.ppewshop.utils.PluginUtils;
 import com.payline.pmapi.bean.common.FailureCause;
 
 import java.io.IOException;

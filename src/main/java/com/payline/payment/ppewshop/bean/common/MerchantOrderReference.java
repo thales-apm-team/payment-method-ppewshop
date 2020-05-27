@@ -2,7 +2,6 @@ package com.payline.payment.ppewshop.bean.common;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import com.payline.payment.ppewshop.utils.PluginUtils;
 
 @JacksonXmlRootElement(localName = "merchandOrderReference")
 public class MerchantOrderReference {
