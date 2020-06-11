@@ -33,6 +33,13 @@ public class CheckStatusOut {
         return creditAuthorizationNumber;
     }
 
+    /**
+     * A: Acceptée
+     * E: à l'étude
+     * I: Incomplet
+     * R: Refusée
+     * C: Cancel
+     */
     public enum StatusCode {
         A, E, I, R, C;
     }

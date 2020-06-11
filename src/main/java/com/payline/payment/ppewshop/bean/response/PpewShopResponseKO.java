@@ -3,7 +3,6 @@ package com.payline.payment.ppewshop.bean.response;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.payline.payment.ppewshop.exception.InvalidDataException;
-import com.payline.payment.ppewshop.utils.PluginUtils;
 import com.payline.pmapi.bean.common.FailureCause;
 
 import java.io.IOException;
@@ -73,28 +72,28 @@ public class PpewShopResponseKO {
     }
 
     public enum ErrorCode {
-        CODE_11001("11001"),
-        CODE_11002("11002"),
-        CODE_11008("11008"),
-        CODE_11009("11009"),
-        CODE_11999("11999"),
-        CODE_21001("21001"),
-        CODE_21002("21002"),
-        CODE_21003("21003"),
-        CODE_21009("21009"),
-        CODE_21999("21999"),
-        CODE_21004("21004"),
-        CODE_12001("12001"),
-        CODE_12002("12002"),
-        CODE_12003("12003"),
-        CODE_12004("12004"),
-        CODE_12006("12006"),
-        CODE_12205("12205"),
-        CODE_22001("22001"),
-        CODE_22002("22002"),
-        CODE_22003("22003"),
-        CODE_12207("12207"),
-        CODE_12301("12301");
+        CODE_11001("11001"),    // The service encountered an exception while trying to store the order information.
+        CODE_11002("11002"),    // The service encountered an exception while trying to store the order information.
+        CODE_11008("11008"),    // Error – Exchange server error
+        CODE_11009("11009"),    // Error – Subsidiary error
+        CODE_11999("11999"),    // Fatal error while querying web-service.
+        CODE_21001("21001"),    // The service encountered an exception while trying to retrieve the order information.
+        CODE_21002("21002"),    // The service was not able to retrieve the status of this loan application.
+        CODE_21003("21003"),    // The service encountered an exception while trying to retrieve the order information.
+        CODE_21009("21009"),    // Error – Subsidiary error
+        CODE_21999("21999"),    // Fatal error while querying web-service.
+        CODE_21004("21004"),    // The service encountered an exception while trying to call WS LoanOrderManagement to retrieve the order information.
+        CODE_12001("12001"),    // Some of the required parameters are invalid : <company code>, <country code>, <amount>, <material code>.
+        CODE_12002("12002"),    // Unable to identify the company.
+        CODE_12003("12003"),    // Unauthorized material code.
+        CODE_12004("12004"),    // Invalid format for the desired guarantee. Authorized values are 0, 1, 2 and 3.
+        CODE_12006("12006"),    // Unable to identify the company for this entrance point
+        CODE_12205("12205"),    // The “bankCardType” field should be empty if financialProductType is “CLA”.
+        CODE_22001("22001"),    // Some of the required parameters are invalid : <company code>, <country code>, <distributor number>, <cetelem transaction id>.
+        CODE_22002("22002"),    // Unable to identify the company.
+        CODE_22003("22003"),    // There is no valid order information with this identifier.
+        CODE_12207("12207"),    // Field <nom du champ> received from client has exceeded maximum size (<size>)
+        CODE_12301("12301");    // Unhandlable request.
 
         public final String code;
 

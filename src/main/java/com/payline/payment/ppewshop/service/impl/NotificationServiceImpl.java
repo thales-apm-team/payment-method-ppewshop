@@ -11,9 +11,9 @@ import com.payline.payment.ppewshop.bean.request.CheckStatusRequest;
 import com.payline.payment.ppewshop.bean.response.CheckStatusResponse;
 import com.payline.payment.ppewshop.exception.InvalidDataException;
 import com.payline.payment.ppewshop.exception.PluginException;
+import com.payline.payment.ppewshop.service.HttpService;
 import com.payline.payment.ppewshop.utils.Constants;
 import com.payline.payment.ppewshop.utils.PluginUtils;
-import com.payline.payment.ppewshop.utils.http.HttpClient;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.notification.request.NotificationRequest;
 import com.payline.pmapi.bean.notification.response.NotificationResponse;
@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 public class NotificationServiceImpl implements NotificationService {
     private static final Logger LOGGER = LogManager.getLogger(NotificationServiceImpl.class);
-    private HttpClient client = HttpClient.getInstance();
+    private HttpService httpService = HttpService.getInstance();
 
     private static final Pattern pattern = Pattern.compile("transactionDeId=(.{13})");
     public static final int CREATED = 204;
@@ -55,7 +55,7 @@ public class NotificationServiceImpl implements NotificationService {
             CheckStatusRequest checkStatusRequest = createCheckStatusRequest(request, partnerTransactionId);
 
             // do the http call to get the final status
-            CheckStatusResponse checkStatusResponse = client.checkStatus(configuration, checkStatusRequest);
+            CheckStatusResponse checkStatusResponse = httpService.checkStatus(configuration, checkStatusRequest);
 
             // check the status and create the right notificationResponse
             notificationResponse = createNotificationResponseFromStatusCode(transactionId

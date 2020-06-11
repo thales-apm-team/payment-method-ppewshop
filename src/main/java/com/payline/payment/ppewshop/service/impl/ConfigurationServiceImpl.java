@@ -6,9 +6,9 @@ import com.payline.payment.ppewshop.bean.configuration.RequestConfiguration;
 import com.payline.payment.ppewshop.bean.request.CheckStatusRequest;
 import com.payline.payment.ppewshop.bean.response.PpewShopResponseKO;
 import com.payline.payment.ppewshop.exception.PluginException;
+import com.payline.payment.ppewshop.service.HttpService;
 import com.payline.payment.ppewshop.utils.Constants;
 import com.payline.payment.ppewshop.utils.PluginUtils;
-import com.payline.payment.ppewshop.utils.http.HttpClient;
 import com.payline.payment.ppewshop.utils.i18n.I18nService;
 import com.payline.payment.ppewshop.utils.properties.ReleaseProperties;
 import com.payline.pmapi.bean.configuration.ReleaseInformation;
@@ -31,7 +31,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     private ReleaseProperties releaseProperties = ReleaseProperties.getInstance();
     private I18nService i18n = I18nService.getInstance();
-    private HttpClient client = HttpClient.getInstance();
+    private HttpService httpService = HttpService.getInstance();
 
     private static final int MERCHANT_CODE_LENGTH = 10;
     private static final int DISTRIBUTOR_NUMBER_LENGTH = 10;
@@ -109,29 +109,29 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 , request.getPartnerConfiguration()
         );
         try {
-            Map<String, String> infos = request.getAccountInfo();
+            Map<String, String> info = request.getAccountInfo();
             // verify fields length
-            if (PluginUtils.isEmpty(infos.get(Constants.ContractConfigurationKeys.MERCHANT_CODE))) {
+            if (PluginUtils.isEmpty(info.get(Constants.ContractConfigurationKeys.MERCHANT_CODE))) {
                 errors.put(Constants.ContractConfigurationKeys.MERCHANT_CODE
                         , i18n.getMessage(MERCHANT_CODE_ERROR_EMPTY, locale));
-            } else if (infos.get(Constants.ContractConfigurationKeys.MERCHANT_CODE).length() != MERCHANT_CODE_LENGTH) {
+            } else if (info.get(Constants.ContractConfigurationKeys.MERCHANT_CODE).length() != MERCHANT_CODE_LENGTH) {
                 errors.put(Constants.ContractConfigurationKeys.MERCHANT_CODE
                         , i18n.getMessage(MERCHANT_CODE_ERROR_LENGTH, locale));
             }
 
-            if (PluginUtils.isEmpty(infos.get(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER))) {
+            if (PluginUtils.isEmpty(info.get(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER))) {
                 errors.put(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER
                         , i18n.getMessage(DISTRIBUTOR_NUMBER_ERROR_EMPTY, locale));
-            } else if (infos.get(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER).length() != DISTRIBUTOR_NUMBER_LENGTH) {
+            } else if (info.get(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER).length() != DISTRIBUTOR_NUMBER_LENGTH) {
                 errors.put(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER
                         , i18n.getMessage(DISTRIBUTOR_NUMBER_ERROR_LENGTH, locale));
             }
 
             // do a test call
             MerchantInformation merchantInformation = MerchantInformation.Builder.aMerchantInformation()
-                    .withMerchantCode(infos.get(Constants.ContractConfigurationKeys.MERCHANT_CODE))
-                    .withDistributorNumber(infos.get(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER))
-                    .withCountryCode(infos.get(Constants.ContractConfigurationKeys.COUNTRY_CODE))
+                    .withMerchantCode(info.get(Constants.ContractConfigurationKeys.MERCHANT_CODE))
+                    .withDistributorNumber(info.get(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER))
+                    .withCountryCode(info.get(Constants.ContractConfigurationKeys.COUNTRY_CODE))
                     .build();
 
             CheckStatusIn checkStatusIn = CheckStatusIn.Builder.aCheckStatusIn()
@@ -142,7 +142,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             CheckStatusRequest checkStatusRequest = new CheckStatusRequest(checkStatusIn);
 
             // call in order to get an ErrorMessage related to a bad transaction Id
-            client.checkStatus(configuration, checkStatusRequest);
+            httpService.checkStatus(configuration, checkStatusRequest);
 
         } catch (PluginException e) {
             if (e.getErrorCode().equalsIgnoreCase(PpewShopResponseKO.ErrorCode.CODE_22002.code)) {

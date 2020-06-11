@@ -8,7 +8,7 @@ public class CheckStatusIn {
     @JacksonXmlProperty(namespace = "urn:PPEWShopServiceV3")
     private String transactionId;
 
-    public CheckStatusIn(Builder builder) {
+    private CheckStatusIn(Builder builder) {
         this.transactionId = builder.transactionId;
         this.merchantInformation = builder.merchantInformation;
     }

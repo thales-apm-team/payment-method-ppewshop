@@ -7,9 +7,9 @@ import com.payline.payment.ppewshop.bean.configuration.RequestConfiguration;
 import com.payline.payment.ppewshop.bean.request.CheckStatusRequest;
 import com.payline.payment.ppewshop.bean.response.CheckStatusResponse;
 import com.payline.payment.ppewshop.exception.PluginException;
+import com.payline.payment.ppewshop.service.HttpService;
 import com.payline.payment.ppewshop.utils.Constants;
 import com.payline.payment.ppewshop.utils.PluginUtils;
-import com.payline.payment.ppewshop.utils.http.HttpClient;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.common.OnHoldCause;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
@@ -30,7 +30,7 @@ import java.net.URL;
 public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirectionService {
     private static final Logger LOGGER = LogManager.getLogger(PaymentWithRedirectionServiceImpl.class);
 
-    private HttpClient client = HttpClient.getInstance();
+    private HttpService httpService = HttpService.getInstance();
 
     @Override
     public PaymentResponse finalizeRedirectionPayment(RedirectionPaymentRequest request) {
@@ -64,7 +64,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
 
         try {
             CheckStatusRequest checkStatusRequest = createCheckStatusRequest(configuration, transactionId);
-            CheckStatusResponse checkStatusResponse = client.checkStatus(configuration, checkStatusRequest);
+            CheckStatusResponse checkStatusResponse = httpService.checkStatus(configuration, checkStatusRequest);
 
             CheckStatusOut.StatusCode statusCode = checkStatusResponse.getCheckStatusOut().getStatusCode();
             switch (statusCode) {

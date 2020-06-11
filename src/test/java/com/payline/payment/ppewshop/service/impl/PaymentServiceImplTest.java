@@ -5,8 +5,7 @@ import com.payline.payment.ppewshop.bean.request.InitDossierRequest;
 import com.payline.payment.ppewshop.bean.response.InitDossierResponse;
 import com.payline.payment.ppewshop.bean.response.PpewShopResponseKO;
 import com.payline.payment.ppewshop.exception.PluginException;
-import com.payline.payment.ppewshop.utils.PluginUtils;
-import com.payline.payment.ppewshop.utils.http.HttpClient;
+import com.payline.payment.ppewshop.service.HttpService;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.payment.Order;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
@@ -36,7 +35,7 @@ class PaymentServiceImplTest {
     private PaymentServiceImpl service = new PaymentServiceImpl();
 
     @Mock
-    private HttpClient client = HttpClient.getInstance();
+    private HttpService httpService = HttpService.getInstance();
 
     @BeforeEach
     void setUp() {
@@ -47,7 +46,7 @@ class PaymentServiceImplTest {
     void paymentRequest(){
         // init Mock
         InitDossierResponse initDossierResponse = InitDossierResponse.fromXml(MockUtils.templateInitDossierResponse);
-        Mockito.doReturn(initDossierResponse).when(client).initDossier(Mockito.any(), Mockito.any());
+        Mockito.doReturn(initDossierResponse).when(httpService).initDossier(Mockito.any(), Mockito.any());
 
         PaymentRequest request = MockUtils.aPaylinePaymentRequest();
         PaymentResponse response = service.paymentRequest(request);
@@ -62,7 +61,7 @@ class PaymentServiceImplTest {
     void paymentRequestKO() {
         // init Mock
         PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode.CODE_21999.code, FailureCause.INVALID_DATA);
-        Mockito.doThrow(exception).when(client).initDossier(any(), any());
+        Mockito.doThrow(exception).when(httpService).initDossier(any(), any());
 
         PaymentRequest request = MockUtils.aPaylinePaymentRequest();
         PaymentResponse response = service.paymentRequest(request);
@@ -75,7 +74,7 @@ class PaymentServiceImplTest {
         // init Mock
         String xml = MockUtils.templateInitDossierResponse.replace("http://redirectionUrl.com", "aMalformedUrl");
         InitDossierResponse initDossierResponse = InitDossierResponse.fromXml(xml);
-        Mockito.doReturn(initDossierResponse).when(client).initDossier(Mockito.any(), Mockito.any());
+        Mockito.doReturn(initDossierResponse).when(httpService).initDossier(Mockito.any(), Mockito.any());
 
         PaymentRequest request = MockUtils.aPaylinePaymentRequest();
         PaymentResponse response = service.paymentRequest(request);

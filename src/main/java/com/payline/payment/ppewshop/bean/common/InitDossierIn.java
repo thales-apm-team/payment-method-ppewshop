@@ -14,7 +14,7 @@ public class InitDossierIn {
     @JacksonXmlProperty(namespace = "urn:PPEWShopServiceV3")
     private MerchantOrderReference orderReference;
 
-    public InitDossierIn(Builder builder) {
+    private InitDossierIn(Builder builder) {
         this.merchantInformation = builder.merchantInformation;
         this.merchantConfiguration = builder.merchantConfiguration;
         this.customerInformation = builder.customerInformation;

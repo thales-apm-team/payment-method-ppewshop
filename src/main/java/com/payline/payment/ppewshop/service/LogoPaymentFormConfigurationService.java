@@ -60,7 +60,7 @@ public abstract class LogoPaymentFormConfigurationService implements PaymentForm
         }
 
         String contentType = config.get("logo.contentType");
-        if (PluginUtils.isEmpty(format)){
+        if (PluginUtils.isEmpty(contentType)){
             LOGGER.error("no content type defined for file {}", filename);
             throw new PluginException("Plugin error: No content type for the logo");
         }

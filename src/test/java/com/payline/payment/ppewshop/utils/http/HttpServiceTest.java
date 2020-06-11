@@ -8,23 +8,23 @@ import com.payline.payment.ppewshop.bean.request.InitDossierRequest;
 import com.payline.payment.ppewshop.bean.response.CheckStatusResponse;
 import com.payline.payment.ppewshop.bean.response.InitDossierResponse;
 import com.payline.payment.ppewshop.exception.PluginException;
-import org.apache.http.client.methods.HttpRequestBase;
+import com.payline.payment.ppewshop.service.HttpService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
+import org.mockito.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-class HttpClientTest {
+class HttpServiceTest {
 
     @Spy
     @InjectMocks
+    private HttpService httpService = HttpService.getInstance();
+
+    @Mock
     private HttpClient client = HttpClient.getInstance();
 
     @BeforeEach
@@ -61,7 +61,7 @@ class HttpClientTest {
 
         CheckStatusRequest request = new CheckStatusRequest(checkStatusIn);
 
-        CheckStatusResponse response = client.checkStatus(configuration, request);
+        CheckStatusResponse response = httpService.checkStatus(configuration, request);
 
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.getCheckStatusOut());
@@ -103,7 +103,7 @@ class HttpClientTest {
 
         CheckStatusRequest request = new CheckStatusRequest(checkStatusIn);
 
-        Assertions.assertThrows(PluginException.class, () -> client.checkStatus(configuration, request));
+        Assertions.assertThrows(PluginException.class, () -> httpService.checkStatus(configuration, request));
 
         // assert the mock is working properly (to avoid false negative)
         verify( client, never() ).execute( any() );
@@ -164,7 +164,7 @@ class HttpClientTest {
                 .build();
 
         InitDossierRequest request = new InitDossierRequest(dossierIn);
-        InitDossierResponse response = client.initDossier(configuration, request);
+        InitDossierResponse response = httpService.initDossier(configuration, request);
 
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.getInitDossierOut());
@@ -229,7 +229,7 @@ class HttpClientTest {
 
         InitDossierRequest request = new InitDossierRequest(dossierIn);
 
-        Assertions.assertThrows(PluginException.class, () -> client.initDossier(configuration, request));
+        Assertions.assertThrows(PluginException.class, () -> httpService.initDossier(configuration, request));
 
         // assert the mock is working properly (to avoid false negative)
         verify( client, never() ).execute( any() );

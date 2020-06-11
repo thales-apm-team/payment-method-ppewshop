@@ -6,7 +6,7 @@ import com.payline.payment.ppewshop.bean.configuration.RequestConfiguration;
 import com.payline.payment.ppewshop.bean.response.CheckStatusResponse;
 import com.payline.payment.ppewshop.bean.response.PpewShopResponseKO;
 import com.payline.payment.ppewshop.exception.PluginException;
-import com.payline.payment.ppewshop.utils.http.HttpClient;
+import com.payline.payment.ppewshop.service.HttpService;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.payment.response.PaymentResponse;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
@@ -34,7 +34,7 @@ class PaymentWithRedirectionServiceImplTest {
     private PaymentWithRedirectionServiceImpl service = new PaymentWithRedirectionServiceImpl();
 
     @Mock
-    private HttpClient client = HttpClient.getInstance();
+    private HttpService httpService = HttpService.getInstance();
 
 
     @BeforeEach
@@ -60,7 +60,7 @@ class PaymentWithRedirectionServiceImplTest {
                 .replace(MockUtils.STATUS_CODE, statusCode.name());
 
         CheckStatusResponse checkStatusResponse = CheckStatusResponse.fromXml(xmlOK);
-        Mockito.doReturn(checkStatusResponse).when(client).checkStatus(any(), any());
+        Mockito.doReturn(checkStatusResponse).when(httpService).checkStatus(any(), any());
 
         RequestConfiguration configuration = new RequestConfiguration(
                 MockUtils.aContractConfiguration()
@@ -80,7 +80,7 @@ class PaymentWithRedirectionServiceImplTest {
         // init Mock
         String xml = MockUtils.templateCheckStatusResponse.replace("http://redirectionUrl.com", "aMalformedUrl").replace(MockUtils.STATUS_CODE, "I");
         CheckStatusResponse checkStatusResponse = CheckStatusResponse.fromXml(xml);
-        Mockito.doReturn(checkStatusResponse).when(client).checkStatus(Mockito.any(), Mockito.any());
+        Mockito.doReturn(checkStatusResponse).when(httpService).checkStatus(Mockito.any(), Mockito.any());
 
 
         RequestConfiguration configuration = new RequestConfiguration(
@@ -103,7 +103,7 @@ class PaymentWithRedirectionServiceImplTest {
     @Test
     void retrieveTransactionStatusException()  {
         PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode.CODE_21999.code, FailureCause.INVALID_DATA);
-        Mockito.doThrow(exception).when(client).checkStatus(any(), any());
+        Mockito.doThrow(exception).when(httpService).checkStatus(any(), any());
 
         RequestConfiguration configuration = new RequestConfiguration(
                 MockUtils.aContractConfiguration()
