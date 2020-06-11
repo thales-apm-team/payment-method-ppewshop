@@ -1,19 +1,15 @@
 package com.payline.payment.ppewshop.service.impl;
 
 import com.payline.payment.ppewshop.MockUtils;
-import com.payline.payment.ppewshop.bean.response.CheckStatusResponse;
 import com.payline.payment.ppewshop.bean.response.PpewShopResponseKO;
 import com.payline.payment.ppewshop.exception.PluginException;
+import com.payline.payment.ppewshop.service.HttpService;
 import com.payline.payment.ppewshop.utils.Constants;
-import com.payline.payment.ppewshop.utils.PluginUtils;
-import com.payline.payment.ppewshop.utils.http.HttpClient;
-import com.payline.payment.ppewshop.utils.i18n.I18nService;
 import com.payline.payment.ppewshop.utils.properties.ReleaseProperties;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.configuration.ReleaseInformation;
 import com.payline.pmapi.bean.configuration.parameter.AbstractParameter;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
-import com.payline.pmapi.bean.payment.ContractProperty;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,9 +19,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.Month;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest.GENERIC_ERROR;
@@ -39,7 +33,7 @@ class ConfigurationServiceImplTest {
     private ConfigurationServiceImpl service = new ConfigurationServiceImpl();
 
     @Mock
-    private HttpClient client = HttpClient.getInstance();
+    private HttpService httpService = HttpService.getInstance();
 
     @Mock private ReleaseProperties releaseProperties;
 
@@ -59,7 +53,7 @@ class ConfigurationServiceImplTest {
     void checkOK() {
         // create mock
         PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode.CODE_21999.code, FailureCause.INVALID_DATA);
-        Mockito.doThrow(exception).when(client).checkStatus(any(), any());
+        Mockito.doThrow(exception).when(httpService).checkStatus(any(), any());
 
         ContractParametersCheckRequest request = MockUtils.aContractParametersCheckRequest();
         Map<String, String> errors = service.check(request);
@@ -95,7 +89,7 @@ class ConfigurationServiceImplTest {
     void checkMerchantCodeKO() {
         // create mock
         PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode.CODE_22002.code, FailureCause.INVALID_DATA);
-        Mockito.doThrow(exception).when(client).checkStatus(any(), any());
+        Mockito.doThrow(exception).when(httpService).checkStatus(any(), any());
 
         ContractParametersCheckRequest request = MockUtils.aContractParametersCheckRequest();
         Map<String, String> errors = service.check(request);
@@ -108,7 +102,7 @@ class ConfigurationServiceImplTest {
     void checkDistributorNumberKO() {
         // create mock
         PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode.CODE_12006.code, FailureCause.INVALID_DATA);
-        Mockito.doThrow(exception).when(client).checkStatus(any(), any());
+        Mockito.doThrow(exception).when(httpService).checkStatus(any(), any());
 
         ContractParametersCheckRequest request = MockUtils.aContractParametersCheckRequest();
         Map<String, String> errors = service.check(request);
@@ -121,7 +115,7 @@ class ConfigurationServiceImplTest {
     void checkKOOther() {
         // create mock
         PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode.CODE_22003.code, FailureCause.INVALID_DATA);
-        Mockito.doThrow(exception).when(client).checkStatus(any(), any());
+        Mockito.doThrow(exception).when(httpService).checkStatus(any(), any());
 
         ContractParametersCheckRequest request = MockUtils.aContractParametersCheckRequest();
         Map<String, String> errors = service.check(request);

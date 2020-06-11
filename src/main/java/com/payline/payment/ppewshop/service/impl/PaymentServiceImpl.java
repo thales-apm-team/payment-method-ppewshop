@@ -6,9 +6,9 @@ import com.payline.payment.ppewshop.bean.request.InitDossierRequest;
 import com.payline.payment.ppewshop.bean.response.InitDossierResponse;
 import com.payline.payment.ppewshop.exception.InvalidDataException;
 import com.payline.payment.ppewshop.exception.PluginException;
+import com.payline.payment.ppewshop.service.HttpService;
 import com.payline.payment.ppewshop.utils.Constants;
 import com.payline.payment.ppewshop.utils.PluginUtils;
-import com.payline.payment.ppewshop.utils.http.HttpClient;
 import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.payment.Order;
@@ -29,7 +29,7 @@ import java.util.*;
 
 public class PaymentServiceImpl implements PaymentService {
     private static final Logger LOGGER = LogManager.getLogger(PaymentServiceImpl.class);
-    private HttpClient client = HttpClient.getInstance();
+    private HttpService httpService = HttpService.getInstance();
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy");
     private static final int MERCHANT_ORDER_ID_LENGTH = 13;
@@ -46,7 +46,7 @@ public class PaymentServiceImpl implements PaymentService {
             );
 
             InitDossierRequest initDossierRequest = createInitDossierFromPaymentRequest(request);
-            InitDossierResponse initDossierResponse = client.initDossier(configuration, initDossierRequest);
+            InitDossierResponse initDossierResponse = httpService.initDossier(configuration, initDossierRequest);
 
             PaymentResponseRedirect.RedirectionRequest redirectionRequest = PaymentResponseRedirect.RedirectionRequest.RedirectionRequestBuilder
                     .aRedirectionRequest()

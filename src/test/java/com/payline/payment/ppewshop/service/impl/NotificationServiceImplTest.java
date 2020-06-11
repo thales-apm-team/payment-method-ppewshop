@@ -3,7 +3,7 @@ package com.payline.payment.ppewshop.service.impl;
 import com.payline.payment.ppewshop.MockUtils;
 import com.payline.payment.ppewshop.bean.common.CheckStatusOut;
 import com.payline.payment.ppewshop.bean.response.CheckStatusResponse;
-import com.payline.payment.ppewshop.utils.http.HttpClient;
+import com.payline.payment.ppewshop.service.HttpService;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.common.FailureTransactionStatus;
 import com.payline.pmapi.bean.common.OnHoldTransactionStatus;
@@ -26,8 +26,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -37,7 +35,7 @@ class NotificationServiceImplTest {
     private NotificationServiceImpl service = new NotificationServiceImpl();
 
     @Mock
-    private HttpClient client = HttpClient.getInstance();
+    private HttpService httpService = HttpService.getInstance();
 
     @BeforeEach
     void setUp() {
@@ -64,7 +62,7 @@ class NotificationServiceImplTest {
                 .replace(MockUtils.STATUS_CODE, statusCode.name());
 
         CheckStatusResponse checkStatusResponse = CheckStatusResponse.fromXml(xmlOK);
-        Mockito.doReturn(checkStatusResponse).when(client).checkStatus(any(), any());
+        Mockito.doReturn(checkStatusResponse).when(httpService).checkStatus(any(), any());
 
 
         NotificationResponse response = service.parse(request);
@@ -108,7 +106,7 @@ class NotificationServiceImplTest {
                 .replace(MockUtils.STATUS_CODE, statusCode.name());
 
         CheckStatusResponse checkStatusResponse = CheckStatusResponse.fromXml(xmlOK);
-        Mockito.doReturn(checkStatusResponse).when(client).checkStatus(any(), any());
+        Mockito.doReturn(checkStatusResponse).when(httpService).checkStatus(any(), any());
 
 
         NotificationResponse response = service.parse(request);

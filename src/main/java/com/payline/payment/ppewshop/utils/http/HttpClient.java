@@ -1,17 +1,8 @@
 package com.payline.payment.ppewshop.utils.http;
 
 
-import com.payline.payment.ppewshop.bean.common.Warning;
-import com.payline.payment.ppewshop.bean.configuration.RequestConfiguration;
-import com.payline.payment.ppewshop.bean.request.CheckStatusRequest;
-import com.payline.payment.ppewshop.bean.request.InitDossierRequest;
-import com.payline.payment.ppewshop.bean.response.CheckStatusResponse;
-import com.payline.payment.ppewshop.bean.response.InitDossierResponse;
-import com.payline.payment.ppewshop.bean.response.PpewShopResponseKO;
 import com.payline.payment.ppewshop.exception.InvalidDataException;
 import com.payline.payment.ppewshop.exception.PluginException;
-import com.payline.payment.ppewshop.utils.Constants;
-import com.payline.payment.ppewshop.utils.PluginUtils;
 import com.payline.payment.ppewshop.utils.properties.ConfigProperties;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.logger.LogManager;
@@ -23,26 +14,16 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicHeader;
 import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 
 
 public class HttpClient {
-
     private static final Logger LOGGER = LogManager.getLogger(HttpClient.class);
-
-    //Headers
-    private static final String CONTENT_TYPE_KEY = "Content-Type";
-    private static final String CONTENT_TYPE_VALUE = "application/xml";
-    private static final String CHARSET_KEY = "charset";
-    private static final String CHARSET_VALUE = "UTF-8";
-
 
     // Exceptions messages
     private static final String SERVICE_URL_ERROR = "Service URL is invalid";
@@ -104,13 +85,6 @@ public class HttpClient {
     }
     // --- Singleton Holder pattern + initialization END
 
-    private Header[] createHeaders() {
-        Header[] headers = new Header[2];
-        headers[0] = new BasicHeader(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
-        headers[1] = new BasicHeader(CHARSET_KEY, CHARSET_VALUE);
-        return headers;
-    }
-
     /**
      * Send the request, with a retry system in case the client does not obtain a proper response from the server.
      *
@@ -149,7 +123,7 @@ public class HttpClient {
      * @param body    the body of the request
      * @return
      */
-    StringResponse post(String url, Header[] headers, StringEntity body) {
+    public StringResponse post(String url, Header[] headers, StringEntity body) {
         URI uri;
         try {
             // Add the createOrderId to the url
@@ -164,55 +138,6 @@ public class HttpClient {
 
         // Execute request
         return this.execute(httpPost);
-    }
-
-    /**
-     * @param configuration contains all request info
-     * @param request       request object needed to create the body
-     * @return the response body of the API call
-     */
-    public CheckStatusResponse checkStatus(RequestConfiguration configuration, CheckStatusRequest request) {
-
-        String body = request.toXml();
-        String url = configuration.getPartnerConfiguration().getProperty(Constants.PartnerConfigurationKeys.URL);
-        Header[] headers = createHeaders();
-
-        StringResponse stringResponse = post(url, headers, new StringEntity(body, StandardCharsets.UTF_8));
-
-        if (stringResponse.isSuccess()) {
-            return CheckStatusResponse.fromXml(stringResponse.getContent());
-        } else {
-            PpewShopResponseKO responseKO = PpewShopResponseKO.fromXml(stringResponse.getContent());
-            LOGGER.error(responseKO.getErrorDescription());
-            throw new PluginException(responseKO.getErrorCode().code, responseKO.getFailureCauseFromErrorCode());
-        }
-    }
-
-    /**
-     * @param configuration contains all request info
-     * @param request       request object needed to create the body
-     * @return the response body of the API call
-     */
-    public InitDossierResponse initDossier(RequestConfiguration configuration, InitDossierRequest request) {
-
-        String body = request.toXml();
-        String url = configuration.getPartnerConfiguration().getProperty(Constants.PartnerConfigurationKeys.URL);
-        Header[] headers = createHeaders();
-
-        StringResponse stringResponse = post(url, headers, new StringEntity(body, StandardCharsets.UTF_8));
-
-        if (stringResponse.isSuccess()) {
-            InitDossierResponse initDossierResponse = InitDossierResponse.fromXml(stringResponse.getContent());
-            Warning warning = initDossierResponse.getInitDossierOut().getWarning();
-            if (warning != null && !PluginUtils.isEmpty(warning.getWarningCode())) {
-                LOGGER.warn("{}: {}", warning.getClass(), warning.getWarningDescription());
-            }
-            return initDossierResponse;
-        } else {
-            PpewShopResponseKO responseKO = PpewShopResponseKO.fromXml(stringResponse.getContent());
-            LOGGER.error(responseKO.getErrorDescription());
-            throw new PluginException(responseKO.getErrorCode().code, responseKO.getFailureCauseFromErrorCode());
-        }
     }
 
 }
