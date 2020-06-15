@@ -8,7 +8,9 @@ import com.payline.payment.ppewshop.bean.response.PpewShopResponseKO;
 import com.payline.payment.ppewshop.exception.PluginException;
 import com.payline.payment.ppewshop.service.HttpService;
 import com.payline.pmapi.bean.common.FailureCause;
+import com.payline.pmapi.bean.common.OnHoldCause;
 import com.payline.pmapi.bean.payment.response.PaymentResponse;
+import com.payline.pmapi.bean.payment.response.buyerpaymentidentifier.impl.Email;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseOnHold;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseRedirect;
@@ -24,6 +26,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -45,17 +49,17 @@ class PaymentWithRedirectionServiceImplTest {
 
     private static Stream<Arguments> statusCode_set() {
         return Stream.of(
-                Arguments.of(CheckStatusOut.StatusCode.A, PaymentResponseSuccess.class),
-                Arguments.of(CheckStatusOut.StatusCode.E, PaymentResponseOnHold.class),
-                Arguments.of(CheckStatusOut.StatusCode.I, PaymentResponseRedirect.class),
-                Arguments.of(CheckStatusOut.StatusCode.R, PaymentResponseFailure.class),
-                Arguments.of(CheckStatusOut.StatusCode.C, PaymentResponseFailure.class)
+                Arguments.of(CheckStatusOut.StatusCode.A, PaymentResponseSuccess.class, null),
+                Arguments.of(CheckStatusOut.StatusCode.E, PaymentResponseOnHold.class, null),
+                Arguments.of(CheckStatusOut.StatusCode.I, PaymentResponseRedirect.class, null),
+                Arguments.of(CheckStatusOut.StatusCode.R, PaymentResponseFailure.class, FailureCause.REFUSED),
+                Arguments.of(CheckStatusOut.StatusCode.C, PaymentResponseFailure.class, FailureCause.CANCEL)
         );
     }
 
     @ParameterizedTest
     @MethodSource("statusCode_set")
-    void retrieveTransactionStatus(CheckStatusOut.StatusCode statusCode, Class responseClass) {
+    void retrieveTransactionStatus(CheckStatusOut.StatusCode statusCode, Class responseClass, FailureCause cause) throws Exception {
         String xmlOK = MockUtils.templateCheckStatusResponse
                 .replace(MockUtils.STATUS_CODE, statusCode.name());
 
@@ -73,6 +77,29 @@ class PaymentWithRedirectionServiceImplTest {
 
         PaymentResponse response = service.retrieveTransactionStatus(configuration, transactionId, email);
         Assertions.assertEquals(responseClass, response.getClass());
+
+        if (responseClass.equals(PaymentResponseSuccess.class)) {
+            PaymentResponseSuccess responseSuccess = (PaymentResponseSuccess) response;
+            Assertions.assertEquals(transactionId, responseSuccess.getPartnerTransactionId());
+            Assertions.assertEquals(Email.class, responseSuccess.getTransactionDetails().getClass());
+            Assertions.assertEquals("34600015", responseSuccess.getTransactionAdditionalData());
+
+        } else if (responseClass.equals(PaymentResponseOnHold.class)) {
+            PaymentResponseOnHold responseOnHold = (PaymentResponseOnHold) response;
+            Assertions.assertEquals(transactionId, responseOnHold.getPartnerTransactionId());
+            Assertions.assertEquals(OnHoldCause.ASYNC_RETRY, responseOnHold.getOnHoldCause());
+
+        } else if (responseClass.equals(PaymentResponseRedirect.class)) {
+            PaymentResponseRedirect responseRedirect = (PaymentResponseRedirect) response;
+            Assertions.assertEquals(transactionId, responseRedirect.getPartnerTransactionId());
+            Assertions.assertEquals(new URL("http://redirectionUrl.com"), responseRedirect.getRedirectionRequest().getUrl());
+
+        } else {
+            PaymentResponseFailure responseFailure = (PaymentResponseFailure) response;
+            Assertions.assertEquals(cause, responseFailure.getFailureCause());
+            Assertions.assertEquals(statusCode.name(), responseFailure.getErrorCode());
+
+        }
     }
 
     @Test
@@ -101,7 +128,7 @@ class PaymentWithRedirectionServiceImplTest {
 
 
     @Test
-    void retrieveTransactionStatusException()  {
+    void retrieveTransactionStatusException() {
         PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode.CODE_21999.code, FailureCause.INVALID_DATA);
         Mockito.doThrow(exception).when(httpService).checkStatus(any(), any());
 
