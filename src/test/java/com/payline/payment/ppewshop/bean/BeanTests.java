@@ -150,42 +150,4 @@ class BeanTests {
         Assertions.assertEquals(errorDescription, responseKO.getErrorDescription());
     }
 
-
-    private static Stream<Arguments> errorCode_set() {
-        return Stream.of(
-                Arguments.of("11001", FailureCause.PAYMENT_PARTNER_ERROR),
-                Arguments.of("11002", FailureCause.PAYMENT_PARTNER_ERROR),
-                Arguments.of("11008", FailureCause.PAYMENT_PARTNER_ERROR),
-                Arguments.of("11009", FailureCause.PAYMENT_PARTNER_ERROR),
-                Arguments.of("11999", FailureCause.PAYMENT_PARTNER_ERROR),
-                Arguments.of("12001", FailureCause.INVALID_DATA),
-                Arguments.of("12002", FailureCause.INVALID_DATA),
-                Arguments.of("12003", FailureCause.INVALID_DATA),
-                Arguments.of("12004", FailureCause.INVALID_DATA),
-                Arguments.of("12006", FailureCause.INVALID_DATA),
-                Arguments.of("12205", FailureCause.INVALID_DATA),
-                Arguments.of("12207", FailureCause.INVALID_FIELD_FORMAT),
-                Arguments.of("12301", FailureCause.REFUSED),
-                Arguments.of("21001", FailureCause.PAYMENT_PARTNER_ERROR),
-                Arguments.of("21002", FailureCause.PAYMENT_PARTNER_ERROR),
-                Arguments.of("21003", FailureCause.PAYMENT_PARTNER_ERROR),
-                Arguments.of("21009", FailureCause.PAYMENT_PARTNER_ERROR),
-                Arguments.of("21999", FailureCause.PAYMENT_PARTNER_ERROR),
-                Arguments.of("21004", FailureCause.PAYMENT_PARTNER_ERROR),
-                Arguments.of("22001", FailureCause.INVALID_DATA),
-                Arguments.of("22002", FailureCause.INVALID_DATA),
-                Arguments.of("22003", FailureCause.INVALID_DATA)
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("errorCode_set")
-    void getFailureCauseFromErrorCodeTest(String errorCode, FailureCause cause) throws Exception{
-        String xml = MockUtils.templateResponseError
-                .replace("ERROR_CODE", errorCode);
-
-        PpewShopResponseKO responseKO = PpewShopResponseKO.fromXml(xml);
-        Assertions.assertEquals(cause, responseKO.getFailureCauseFromErrorCode());
-    }
-
 }

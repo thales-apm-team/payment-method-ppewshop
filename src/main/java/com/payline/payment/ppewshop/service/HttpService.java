@@ -9,6 +9,7 @@ import com.payline.payment.ppewshop.bean.response.InitDossierResponse;
 import com.payline.payment.ppewshop.bean.response.PpewShopResponseKO;
 import com.payline.payment.ppewshop.exception.PluginException;
 import com.payline.payment.ppewshop.utils.Constants;
+import com.payline.payment.ppewshop.utils.FailureBusiness;
 import com.payline.payment.ppewshop.utils.PluginUtils;
 import com.payline.payment.ppewshop.utils.http.HttpClient;
 import com.payline.payment.ppewshop.utils.http.StringResponse;
@@ -70,7 +71,7 @@ public class HttpService {
         } else {
             PpewShopResponseKO responseKO = PpewShopResponseKO.fromXml(stringResponse.getContent());
             LOGGER.error(responseKO.getErrorDescription());
-            throw new PluginException(responseKO.getErrorCode().code, responseKO.getFailureCauseFromErrorCode());
+            throw new PluginException(responseKO.getErrorCode().code, FailureBusiness.getFailureCauseFromErrorCode(responseKO.getErrorCode()));
         }
     }
 
@@ -97,7 +98,7 @@ public class HttpService {
         } else {
             PpewShopResponseKO responseKO = PpewShopResponseKO.fromXml(stringResponse.getContent());
             LOGGER.error(responseKO.getErrorDescription());
-            throw new PluginException(responseKO.getErrorCode().code, responseKO.getFailureCauseFromErrorCode());
+            throw new PluginException(responseKO.getErrorCode().code, FailureBusiness.getFailureCauseFromErrorCode(responseKO.getErrorCode()));
         }
     }
 
