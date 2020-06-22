@@ -75,14 +75,14 @@ task generateMetaInf {
                 }
 
                 if (line.contains('class') && line.contains('implements')) {
-                    _classname = file.getName().replace(".java", "");
-                    String implementedClasses = line.trim().split("implements")[1];
-                    implementedClasses.replace(",", " ").trim();
-                    String[] implementedClasse = implementedClasses.split();
+                    _classname = file.getName().replace(".java", "")
+                    String implementedClasses = line.trim().split("implements")[1]
+                    implementedClasses.replace(",", " ").trim()
+                    String[] implementedClasse = implementedClasses.split()
                     for (int i = 0; i < implementedClasse.length; i++) {
                         if (imports.containsKey(implementedClasse[i])) {
-                            def metafile = new File(srcDir.getPath() + '/' + imports.get(implementedClasse[i]));
-                            metafile.write(_package + _classname);
+                            def metafile = new File(srcDir.getPath() + '/' + imports.get(implementedClasse[i]))
+                            metafile.write(_package + _classname)
                         }
                     }
 
@@ -90,7 +90,7 @@ task generateMetaInf {
 
             }
             def configMetafile = new File(srcDir.getPath() + '/com.payline.pmapi.service.PaymentFormConfigurationService')
-            configMetafile.write(_package + 'PaymentFormConfigurationServiceImpl');
+            configMetafile.write(_package + 'PaymentFormConfigurationServiceImpl')
 
         }
     }
@@ -99,18 +99,18 @@ task generateMetaInf {
 
 task generateGitIgnore {
     def externalFileName = "$projectDir/.gitignore"
-    File file = new File(externalFileName);
+    File file = new File(externalFileName)
     if (!file.exists()) {
-        def ignore = new File("$projectDir/.gitignore");
-        ignore.write(".gradle/\nout/\nbuild/\n.idea/\n.external\n");
+        def ignore = new File("$projectDir/.gitignore")
+        ignore.write(".gradle/\nout/\nbuild/\n.idea/\n.external\n")
     } else {
-        Boolean toWrite = true;
+        Boolean toWrite = true
 
         file.eachLine { line ->
             // check if the line contains your data
 
             if (line.contains('.external')) {
-                toWrite = false;
+                toWrite = false
 
             }
 
@@ -118,7 +118,7 @@ task generateGitIgnore {
 
         if (toWrite) {
 
-            ignore.write(".external\n");
+            ignore.write(".external\n")
         }
     }
 }
@@ -134,7 +134,7 @@ task checkJarSize {
         if (file.length() > 2097152) {
             JOptionPane.showMessageDialog(null, "Jar file size is too heavy : " + file.length(),
                     "Titre : exception",
-                    JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.ERROR_MESSAGE)
         }
     }
 }
