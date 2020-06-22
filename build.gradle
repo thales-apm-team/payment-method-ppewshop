@@ -14,7 +14,6 @@ apply plugin: 'jacoco'
 
 
 def externalFileName = "$projectDir/.external"
-
 if (file(externalFileName).exists()) {
     apply from: "external.gradle"
 } else {
@@ -50,9 +49,8 @@ dependencies {
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.0'
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.9'
 
-    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-server', version: '3.13.0'
-    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-support', version: '3.13.0'
 
+    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.14.0'
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.0.0'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.5.0'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.5.0'
@@ -74,8 +72,7 @@ shadowJar {
         exclude(dependency('org.junit.jupiter:junit-jupiter-api:5.0.3'))
         exclude(dependency('org.powermock:powermock-api-mockito2:2.0.0'))
         exclude(dependency('org.jmockit:jmockit:1.8'))
-        exclude(dependency('org.seleniumhq.selenium:selenium-server:3.13.0'))
-        exclude(dependency('org.seleniumhq.selenium:selenium-support:3.13.0'))
+        exclude(dependency('org.seleniumhq.selenium:selenium-java:3.141.59'))
     }
 }
 
