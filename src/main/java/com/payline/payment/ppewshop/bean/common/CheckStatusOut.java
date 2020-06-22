@@ -41,6 +41,6 @@ public class CheckStatusOut {
      * C: Cancel
      */
     public enum StatusCode {
-        A, E, I, R, C;
+        A, E, I, R, C
     }
 }

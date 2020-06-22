@@ -4,7 +4,9 @@ import com.payline.payment.ppewshop.bean.common.CheckStatusIn;
 import com.payline.payment.ppewshop.bean.common.MerchantInformation;
 import com.payline.payment.ppewshop.bean.configuration.RequestConfiguration;
 import com.payline.payment.ppewshop.bean.request.CheckStatusRequest;
-import com.payline.payment.ppewshop.bean.response.PpewShopResponseKO;
+import com.payline.payment.ppewshop.exception.InvalidDistributorNumberException;
+import com.payline.payment.ppewshop.exception.InvalidMerchantCodeException;
+import com.payline.payment.ppewshop.exception.InvalidTransactionIdException;
 import com.payline.payment.ppewshop.exception.PluginException;
 import com.payline.payment.ppewshop.service.HttpService;
 import com.payline.payment.ppewshop.utils.Constants;
@@ -143,22 +145,21 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
             // call in order to get an ErrorMessage related to a bad transaction Id
             httpService.checkStatus(configuration, checkStatusRequest);
-
+        } catch (InvalidMerchantCodeException e) {
+            LOGGER.info("Invalid Merchant code:{}", e.getErrorCode());
+            errors.put(Constants.ContractConfigurationKeys.MERCHANT_CODE
+                    , i18n.getMessage(MERCHANT_CODE_ERROR_INVALID, locale));
+        } catch (InvalidDistributorNumberException e) {
+            // wrong distributor number
+            LOGGER.info("Invalid Distributor number: {}", e.getErrorCode());
+            errors.put(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER
+                    , i18n.getMessage(DISTRIBUTOR_NUMBER_ERROR_INVALID, locale));
+        } catch (InvalidTransactionIdException e) {
+            // intended exception, does noting
         } catch (PluginException e) {
-            if (e.getErrorCode().equalsIgnoreCase(PpewShopResponseKO.ErrorCode.CODE_22002.code)) {
-                // wrong merchant code
-                errors.put(Constants.ContractConfigurationKeys.MERCHANT_CODE
-                        , i18n.getMessage(MERCHANT_CODE_ERROR_INVALID, locale));
-
-            } else if (e.getErrorCode().equalsIgnoreCase(PpewShopResponseKO.ErrorCode.CODE_12006.code)) {
-                // wrong distributor number
-                errors.put(Constants.ContractConfigurationKeys.DISTRIBUTOR_NUMBER
-                        , i18n.getMessage(DISTRIBUTOR_NUMBER_ERROR_INVALID, locale));
-            } else if (!e.getErrorCode().equalsIgnoreCase(PpewShopResponseKO.ErrorCode.CODE_21999.code)) {
-                // another unintended error
-                errors.put(GENERIC_ERROR, e.getErrorCode());
-            }
-
+            // unintended error
+            LOGGER.info("invalid response: {}", e.getErrorCode(), e);
+            errors.put(GENERIC_ERROR, e.getErrorCode());
         } catch (RuntimeException e) {
             LOGGER.error("Unexpected plugin error", e);
             errors.put(GENERIC_ERROR, e.getMessage());
@@ -171,12 +172,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         String date = releaseProperties.get("release.date");
         String version = releaseProperties.get("release.version");
 
-        if (PluginUtils.isEmpty(date)){
+        if (PluginUtils.isEmpty(date)) {
             LOGGER.error("Date is not defined");
             throw new PluginException("Plugin error: Date is not defined");
         }
 
-        if (PluginUtils.isEmpty(version)){
+        if (PluginUtils.isEmpty(version)) {
             LOGGER.error("Version is not defined");
             throw new PluginException("Plugin error: Version is not defined");
         }
