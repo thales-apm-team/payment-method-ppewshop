@@ -2,6 +2,9 @@ package com.payline.payment.ppewshop.service.impl;
 
 import com.payline.payment.ppewshop.MockUtils;
 import com.payline.payment.ppewshop.bean.response.PpewShopResponseKO;
+import com.payline.payment.ppewshop.exception.InvalidDistributorNumberException;
+import com.payline.payment.ppewshop.exception.InvalidMerchantCodeException;
+import com.payline.payment.ppewshop.exception.InvalidTransactionIdException;
 import com.payline.payment.ppewshop.exception.PluginException;
 import com.payline.payment.ppewshop.service.HttpService;
 import com.payline.payment.ppewshop.utils.Constants;
@@ -52,7 +55,7 @@ class ConfigurationServiceImplTest {
     @Test
     void checkOK() {
         // create mock
-        PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode.CODE_21999.code, FailureCause.INVALID_DATA);
+        PluginException exception = new InvalidTransactionIdException("123456");
         Mockito.doThrow(exception).when(httpService).checkStatus(any(), any());
 
         ContractParametersCheckRequest request = MockUtils.aContractParametersCheckRequest();
@@ -88,7 +91,7 @@ class ConfigurationServiceImplTest {
     @Test
     void checkMerchantCodeKO() {
         // create mock
-        PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode.CODE_22002.code, FailureCause.INVALID_DATA);
+        PluginException exception = new InvalidMerchantCodeException("123");
         Mockito.doThrow(exception).when(httpService).checkStatus(any(), any());
 
         ContractParametersCheckRequest request = MockUtils.aContractParametersCheckRequest();
@@ -101,7 +104,7 @@ class ConfigurationServiceImplTest {
     @Test
     void checkDistributorNumberKO() {
         // create mock
-        PluginException exception = new PluginException(PpewShopResponseKO.ErrorCode.CODE_12006.code, FailureCause.INVALID_DATA);
+        PluginException exception = new InvalidDistributorNumberException("123");
         Mockito.doThrow(exception).when(httpService).checkStatus(any(), any());
 
         ContractParametersCheckRequest request = MockUtils.aContractParametersCheckRequest();
