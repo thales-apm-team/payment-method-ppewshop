@@ -7,6 +7,9 @@ import com.payline.payment.ppewshop.bean.request.InitDossierRequest;
 import com.payline.payment.ppewshop.bean.response.CheckStatusResponse;
 import com.payline.payment.ppewshop.bean.response.InitDossierResponse;
 import com.payline.payment.ppewshop.bean.response.PpewShopResponseKO;
+import com.payline.payment.ppewshop.exception.InvalidDistributorNumberException;
+import com.payline.payment.ppewshop.exception.InvalidMerchantCodeException;
+import com.payline.payment.ppewshop.exception.InvalidTransactionIdException;
 import com.payline.payment.ppewshop.exception.PluginException;
 import com.payline.payment.ppewshop.utils.Constants;
 import com.payline.payment.ppewshop.utils.FailureBusiness;
@@ -71,7 +74,21 @@ public class HttpService {
         } else {
             PpewShopResponseKO responseKO = PpewShopResponseKO.fromXml(stringResponse.getContent());
             LOGGER.error(responseKO.getErrorDescription());
-            throw new PluginException(responseKO.getErrorCode().code, FailureBusiness.getFailureCauseFromErrorCode(responseKO.getErrorCode()));
+
+            if (responseKO.getErrorCode().equals(PpewShopResponseKO.ErrorCode.CODE_22002)) {
+                // wrong merchant code
+                throw new InvalidMerchantCodeException(request.getCheckStatusIn().getMerchantInformation().getMerchantCode());
+            } else if (responseKO.getErrorCode().equals(PpewShopResponseKO.ErrorCode.CODE_12006)) {
+                // wrong distributor number
+                throw new InvalidDistributorNumberException(request.getCheckStatusIn().getMerchantInformation().getDistributorNumber());
+
+            } else if (responseKO.getErrorCode().equals(PpewShopResponseKO.ErrorCode.CODE_21999)) {
+                // transaction not found
+                throw new InvalidTransactionIdException(request.getCheckStatusIn().getTransactionId());
+            } else{
+                // other error code
+                throw new PluginException(responseKO.getErrorCode().code, FailureBusiness.getFailureCauseFromErrorCode(responseKO.getErrorCode()));
+            }
         }
     }
 
