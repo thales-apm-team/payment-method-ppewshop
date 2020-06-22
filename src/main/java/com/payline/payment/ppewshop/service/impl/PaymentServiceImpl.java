@@ -109,6 +109,10 @@ public class PaymentServiceImpl implements PaymentService {
             throw new InvalidDataException("paymentRequest.buyer.fullName is required");
         }
 
+        if (buyer.getAddresses() == null){
+            throw new InvalidDataException(("paymentRequest.buyer.addresses is required"));
+        }
+
         Buyer.Address address = buyer.getAddressForType(Buyer.AddressType.BILLING);
         if (address == null) {
             throw new InvalidDataException("paymentRequest.buyer.address(BILLING) is required");
@@ -117,6 +121,10 @@ public class PaymentServiceImpl implements PaymentService {
         Date birthDate = buyer.getBirthday();
         if (birthDate == null) {
             throw new InvalidDataException("paymentRequest.buyer.birthDate is required");
+        }
+
+        if (request.getLocale() == null){
+            throw new InvalidDataException("paymentRequest.locale is required");
         }
 
         CustomerInformation customerInformation = CustomerInformation.Builder.aCustomerInformation()
@@ -174,6 +182,17 @@ public class PaymentServiceImpl implements PaymentService {
 
         for (Order.OrderItem item : items) {
             // get category and amount values
+            if(item.getCategory() == null){
+                throw new InvalidDataException("item must contain a category");
+            }
+
+            if(item.getAmount() == null || item.getAmount().getAmountInSmallestUnit() == null){
+                throw new InvalidDataException("item must contain an amount");
+            }
+
+            if (item.getQuantity() == null){
+                throw new  InvalidDataException("item must contain a quantity");
+            }
             String cat = item.getCategory();
             BigInteger amount = item.getAmount().getAmountInSmallestUnit()
                     .multiply(BigInteger.valueOf(item.getQuantity()));
