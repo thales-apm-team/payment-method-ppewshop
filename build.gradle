@@ -12,6 +12,11 @@ apply plugin: 'maven-publish'
 apply plugin: 'java-library'
 apply plugin: 'jacoco'
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+compileJava.options.encoding = 'UTF-8'
+
 
 def externalFileName = "$projectDir/.external"
 if (file(externalFileName).exists()) {
@@ -20,60 +25,24 @@ if (file(externalFileName).exists()) {
     apply from: "monext.gradle"
 }
 
-description = 'payment-method-ppewshop'
-group = 'com.payline.payment.ppewshop'
-version = '1.0.2-SNAPSHOT'
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-compileJava.options.encoding = 'UTF-8'
-
-ext {
-    paymentMethodApiVersion = '1.7'
-    paymentMethodIntegrationVersion = '1.4'
-    mockitoVersion = '2.19.0'
-    releaseDirectoryPath = 'D:/build'
-}
-
 configurations {
     fatJarTest
 }
 
 dependencies {
-    implementation group:'com.payline', name: 'payment-method-api', version: "$paymentMethodApiVersion"
-    testImplementation group: 'com.payline', name: 'payment-method-integration', version: "$paymentMethodIntegrationVersion"
+    implementation group:'com.payline', name: 'payment-method-api', version: paymentMethodApiVersion
+    testImplementation group: 'com.payline', name: 'payment-method-integration', version: paymentMethodIntegrationVersion
 
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.8'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.0'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.0'
-    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.9'
+    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: jacksonVersion
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4jsVersion
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4jsVersion
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: httpComponentVersion
 
 
-    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.14.0'
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.0.0'
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.5.0'
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.5.0'
-}
-
-dependencyCheck {
-    format 'ALL'
-}
-
-assemble.dependsOn shadowJar
-
-shadowJar {
-    classifier = ''
-    dependencies {
-        exclude(dependency('com.payline:payment-method-api'))
-        exclude(dependency('org.apache.logging.log4j:log4j-api:2.11.0'))
-        exclude(dependency('org.apache.logging.log4j:log4j-core:2.11.0'))
-        exclude(dependency('org.junit.jupiter:junit-jupiter-params:5.0.3'))
-        exclude(dependency('org.junit.jupiter:junit-jupiter-api:5.0.3'))
-        exclude(dependency('org.powermock:powermock-api-mockito2:2.0.0'))
-        exclude(dependency('org.jmockit:jmockit:1.8'))
-        exclude(dependency('org.seleniumhq.selenium:selenium-java:3.141.59'))
-    }
+    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: seleniumVersion
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: mockitoVersion
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: jupiterVersion
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: jupiterVersion
 }
 
 jar {
@@ -90,17 +59,22 @@ jar {
     }
 }
 
-// task buildToLocal(type: Copy) {
-//     dependsOn shadowJar
-//     from shadowJar
-//     into "${releaseDirectoryPath}"
-// }
 
-// task printVersion {
-//     doLast {
-//         println version
-//     }
-// }
+assemble.dependsOn shadowJar
+
+shadowJar {
+    classifier = ''
+    dependencies {
+        exclude(dependency('com.payline:payment-method-api'))
+        exclude(dependency('org.apache.logging.log4j:log4j-api:2.11.0'))
+        exclude(dependency('org.apache.logging.log4j:log4j-core:2.11.0'))
+        exclude(dependency('org.junit.jupiter:junit-jupiter-params:5.0.3'))
+        exclude(dependency('org.junit.jupiter:junit-jupiter-api:5.0.3'))
+        exclude(dependency('org.powermock:powermock-api-mockito2:2.0.0'))
+        exclude(dependency('org.jmockit:jmockit:1.8'))
+        exclude(dependency('org.seleniumhq.selenium:selenium-java:3.141.59'))
+    }
+}
 
 /* Replace tokens in resources files after compilation */
 processResources {
@@ -126,4 +100,15 @@ task testJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
 test {
     useJUnitPlatform()
     exclude('**/*IT.class')
+}
+
+dependencyCheck {
+    format 'ALL'
+    skipConfigurations = ['jacocoAgent', 'jacocoAnt', 'annotationProcessor', 'axisGenAntTask', 'jaxws', 'execJar', 'jaxb', 'generateSources']
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
 }
