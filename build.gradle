@@ -22,7 +22,7 @@ if (file(externalFileName).exists()) {
 
 description = 'payment-method-ppewshop'
 group = 'com.payline.payment.ppewshop'
-version = '1.0.1'
+version = '1.0.2-SNAPSHOT'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
