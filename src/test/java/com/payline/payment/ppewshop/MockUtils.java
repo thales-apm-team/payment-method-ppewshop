@@ -33,51 +33,8 @@ public class MockUtils {
 
     public static final String STATUS_CODE = "STATUS_CODE";
 
-    public static final String templateCheckStatusRequest = "<checkStatus xmlns=\"urn:PPEWShopServiceV3\">\n" +
-            "  <checkStatusIn>\n" +
-            "    <merchantInformation>\n" +
-            "      <merchandCode>1212121212</merchandCode>\n" +
-            "      <distributorNumber>2323232323</distributorNumber>\n" +
-            "      <countryCode>FRA</countryCode>\n" +
-            "    </merchantInformation>\n" +
-            "    <transactionId>1234567890</transactionId>\n" +
-            "  </checkStatusIn>\n" +
-            "</checkStatus>\n";
-
-    public static final String templateInitDossierRequest = "<initDossier xmlns=\"urn:PPEWShopServiceV3\">\n" +
-            "  <initDossierIn>\n" +
-            "    <merchantInformation>\n" +
-            "      <merchandCode>1212121212</merchandCode>\n" +
-            "      <distributorNumber>2323232323</distributorNumber>\n" +
-            "      <countryCode>FRA</countryCode>\n" +
-            "    </merchantInformation>\n" +
-            "    <merchantConfiguration>\n" +
-            "      <guarPushUrl>urlPush</guarPushUrl>\n" +
-            "      <guarBackUrl>urlBack</guarBackUrl>\n" +
-            "    </merchantConfiguration>\n" +
-            "    <customerInformation>\n" +
-            "      <title>MR</title>\n" +
-            "      <customerLanguage>FR</customerLanguage>\n" +
-            "      <firstName>Test</firstName>\n" +
-            "      <name>Test</name>\n" +
-            "      <birthDate>1992-08-14</birthDate>\n" +
-            "      <email>test.test@cetelem.fr</email>\n" +
-            "      <addressLine1>25 Elysées la Défense</addressLine1>\n" +
-            "      <addressLine2>Apt 20</addressLine2>\n" +
-            "      <city>La défense</city>\n" +
-            "      <postCode>92000</postCode>\n" +
-            "      <cellPhoneNumber>0172757512</cellPhoneNumber>\n" +
-            "      <privatePhoneNumber/>\n" +
-            "      <professionalPhoneNumber/>\n" +
-            "    </customerInformation>\n" +
-            "    <orderInformation>\n" +
-            "      <goodsCode>616</goodsCode>\n" +
-            "      <price>1000</price>\n" +
-            "      <financialProductType>CLA</financialProductType>\n" +
-            "    </orderInformation>\n" +
-            "    <orderReference/>\n" +
-            "  </initDossierIn>\n" +
-            "</initDossier>\n";
+    public static final String templateCheckStatusRequest = "<checkStatus xmlns=\"urn:PPEWShopServiceV3\"><checkStatusIn><merchantInformation><merchandCode>1212121212</merchandCode><distributorNumber>2323232323</distributorNumber><countryCode>FRA</countryCode></merchantInformation><transactionId>1234567890</transactionId></checkStatusIn></checkStatus>";
+    public static final String templateInitDossierRequest = "<initDossier xmlns=\"urn:PPEWShopServiceV3\"><initDossierIn><merchantInformation><merchandCode>1212121212</merchandCode><distributorNumber>2323232323</distributorNumber><countryCode>FRA</countryCode></merchantInformation><merchantConfiguration><guarPushUrl>urlPush</guarPushUrl><guarBackUrl>urlBack</guarBackUrl></merchantConfiguration><customerInformation><title>MR</title><customerLanguage>FR</customerLanguage><firstName>Test</firstName><name>Test</name><birthDate>1992-08-14</birthDate><email>test.test@cetelem.fr</email><addressLine1>25 Elysées la Défense</addressLine1><addressLine2>Apt 20</addressLine2><city>La défense</city><postCode>92000</postCode><cellPhoneNumber>0172757512</cellPhoneNumber><privatePhoneNumber/><professionalPhoneNumber/></customerInformation><orderInformation><goodsCode>616</goodsCode><price>1000</price><financialProductType>CLA</financialProductType></orderInformation><orderReference/></initDossierIn></initDossier>";
 
     public static final String templateInitDossierResponse = "<initDossierResponse xmlns=\"urn:PPEWShopServiceV3\">" +
             "<initDossierOut>" +
