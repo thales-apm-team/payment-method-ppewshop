@@ -1,6 +1,7 @@
 package com.payline.payment.ppewshop.service.impl;
 
 import com.payline.payment.ppewshop.MockUtils;
+import com.payline.payment.ppewshop.bean.common.*;
 import com.payline.payment.ppewshop.bean.request.InitDossierRequest;
 import com.payline.payment.ppewshop.bean.response.InitDossierResponse;
 import com.payline.payment.ppewshop.bean.response.PpewShopResponseKO;
@@ -43,7 +44,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void paymentRequest(){
+    void paymentRequest() {
         // init Mock
         InitDossierResponse initDossierResponse = InitDossierResponse.fromXml(MockUtils.templateInitDossierResponse);
         Mockito.doReturn(initDossierResponse).when(httpService).initDossier(Mockito.any(), Mockito.any());
@@ -90,13 +91,44 @@ class PaymentServiceImplTest {
         InitDossierRequest initDossierRequest = service.createInitDossierFromPaymentRequest(request);
 
         Assertions.assertNotNull(initDossierRequest);
-        Assertions.assertNotNull(initDossierRequest.getInitDossierIn());
-        Assertions.assertNotNull(initDossierRequest.getInitDossierIn().getCustomerInformation());
-        Assertions.assertNotNull(initDossierRequest.getInitDossierIn().getMerchantConfiguration());
-        Assertions.assertNotNull(initDossierRequest.getInitDossierIn().getMerchantInformation());
-        Assertions.assertNotNull(initDossierRequest.getInitDossierIn().getOrderInformation());
-        Assertions.assertNotNull(initDossierRequest.getInitDossierIn().getOrderReference());
-        
+        InitDossierIn dossierIn = initDossierRequest.getInitDossierIn();
+        Assertions.assertNotNull(dossierIn);
+
+        CustomerInformation customerInformation = dossierIn.getCustomerInformation();
+        Assertions.assertNotNull(customerInformation);
+        Assertions.assertEquals("street1", customerInformation.getAddressLine1());
+        Assertions.assertEquals("street2", customerInformation.getAddressLine2());
+        Assertions.assertEquals("01-01-2020", customerInformation.getBirthDate());
+        Assertions.assertEquals("0612345678", customerInformation.getCellPhoneNumber());
+        Assertions.assertEquals("City", customerInformation.getCity());
+        Assertions.assertEquals("FRA", customerInformation.getCustomerLanguage());
+        Assertions.assertEquals("foo@bar.baz", customerInformation.getEmail());
+        Assertions.assertEquals("Marie", customerInformation.getFirstName());
+        Assertions.assertEquals("Durand", customerInformation.getName());
+        Assertions.assertEquals("75000", customerInformation.getPostCode());
+        Assertions.assertEquals("0612345678", customerInformation.getPrivatePhoneNumber());
+        Assertions.assertEquals("0712345678", customerInformation.getProfessionalPhoneNumber());
+
+        MerchantConfiguration merchantConfiguration = dossierIn.getMerchantConfiguration();
+        Assertions.assertNotNull(merchantConfiguration);
+        Assertions.assertEquals("http://redirectionURL.com", merchantConfiguration.getGuarBackUrl());
+        Assertions.assertEquals("http://notificationURL.com", merchantConfiguration.getGuarPushUrl());
+
+        MerchantInformation merchantInformation = dossierIn.getMerchantInformation();
+        Assertions.assertNotNull(merchantInformation);
+        Assertions.assertEquals("FRA", merchantInformation.getCountryCode());
+        Assertions.assertEquals("1000828996", merchantInformation.getDistributorNumber());
+        Assertions.assertEquals("3550937738", merchantInformation.getMerchantCode());
+
+        OrderInformation orderInformation = dossierIn.getOrderInformation();
+        Assertions.assertNotNull(orderInformation);
+        Assertions.assertEquals("CLA", orderInformation.getFinancialProductType());
+        Assertions.assertEquals("625", orderInformation.getGoodsCode());
+        Assertions.assertEquals("2000.00", orderInformation.getPrice());
+
+        MerchantOrderReference orderReference = dossierIn.getOrderReference();
+        Assertions.assertNotNull(orderReference);
+        Assertions.assertEquals("1234567890123", orderReference.getMerchantOrderId());
     }
 
     @Test
