@@ -1,5 +1,7 @@
 package com.payline.payment.ppewshop.utils;
 
+import com.payline.payment.ppewshop.service.HttpService;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,6 +94,19 @@ public class GoodsCodeBusiness {
     private GoodsCodeBusiness() {
     }
 
+    private static class Holder {
+        private static final GoodsCodeBusiness instance = new GoodsCodeBusiness();
+    }
+
+
+    public static GoodsCodeBusiness getInstance() {
+        return GoodsCodeBusiness.Holder.instance;
+    }
+    // --- Singleton Holder pattern + initialization END
+
+
+
+
     /**
      * Return a PPEW category mapped from Payline category
      * 000 codes are for non mappable category
@@ -99,7 +114,7 @@ public class GoodsCodeBusiness {
      * @param cat Payline category to convert
      * @return the PPWE goods code
      */
-    public static String getGoodsCode(String cat) {
+    public String getGoodsCode(String cat) {
         String goodsCode = goodsCodes.get(cat);
         if (goodsCode == null) goodsCode = "000";
 

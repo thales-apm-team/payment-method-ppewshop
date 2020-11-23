@@ -145,7 +145,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .build();
 
         OrderInformation orderInformation = OrderInformation.Builder.anOrderInformation()
-                .withGoodsCode(GoodsCodeBusiness.getGoodsCode(getMainCat(request.getOrder().getItems())))
+                .withGoodsCode(GoodsCodeBusiness.getInstance().getGoodsCode(getMainCat(request.getOrder().getItems())))
                 .withPrice(PluginUtils.createStringAmount(request.getAmount().getAmountInSmallestUnit(), request.getAmount().getCurrency()))
                 .withFinancialProductType(OrderInformation.CLA)
                 .build();

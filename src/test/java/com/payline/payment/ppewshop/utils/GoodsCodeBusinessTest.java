@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 class GoodsCodeBusinessTest {
+    GoodsCodeBusiness business = GoodsCodeBusiness.getInstance();
 
     private static Stream<Arguments> category_set() {
         return Stream.of(
@@ -97,6 +98,6 @@ class GoodsCodeBusinessTest {
     @ParameterizedTest
     @MethodSource("category_set")
     void getGoodsCodeTest(String paylineCategory, String PpewCategory) {
-        Assertions.assertEquals(PpewCategory, GoodsCodeBusiness.getGoodsCode(paylineCategory));
+        Assertions.assertEquals(PpewCategory, business.getGoodsCode(paylineCategory));
     }
 }
