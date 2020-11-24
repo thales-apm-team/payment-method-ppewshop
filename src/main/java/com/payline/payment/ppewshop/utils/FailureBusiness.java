@@ -5,6 +5,8 @@ import com.payline.pmapi.bean.common.FailureCause;
 
 public class FailureBusiness {
 
+    private FailureBusiness() {
+    }
 
     public static FailureCause getFailureCauseFromErrorCode(PpewShopResponseKO.ErrorCode errorCode) {
 
@@ -12,13 +14,10 @@ public class FailureBusiness {
         switch (errorCode) {
             case CODE_11001:
             case CODE_11002:
-            case CODE_11008:
-            case CODE_11009:
             case CODE_11999:
             case CODE_21001:
             case CODE_21002:
             case CODE_21003:
-            case CODE_21009:
             case CODE_21999:
             case CODE_21004:
                 cause = FailureCause.PAYMENT_PARTNER_ERROR;
@@ -32,13 +31,12 @@ public class FailureBusiness {
             case CODE_22001:
             case CODE_22002:
             case CODE_22003:
+            case CODE_12202:
+            case CODE_12206:
                 cause = FailureCause.INVALID_DATA;
                 break;
             case CODE_12207:
                 cause = FailureCause.INVALID_FIELD_FORMAT;
-                break;
-            case CODE_12301:
-                cause = FailureCause.REFUSED;
                 break;
             default:
                 cause = FailureCause.PARTNER_UNKNOWN_ERROR;

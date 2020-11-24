@@ -18,8 +18,6 @@ class FailureBusinessTest {
         return Stream.of(
                 Arguments.of("11001", FailureCause.PAYMENT_PARTNER_ERROR),
                 Arguments.of("11002", FailureCause.PAYMENT_PARTNER_ERROR),
-                Arguments.of("11008", FailureCause.PAYMENT_PARTNER_ERROR),
-                Arguments.of("11009", FailureCause.PAYMENT_PARTNER_ERROR),
                 Arguments.of("11999", FailureCause.PAYMENT_PARTNER_ERROR),
                 Arguments.of("12001", FailureCause.INVALID_DATA),
                 Arguments.of("12002", FailureCause.INVALID_DATA),
@@ -28,16 +26,17 @@ class FailureBusinessTest {
                 Arguments.of("12006", FailureCause.INVALID_DATA),
                 Arguments.of("12205", FailureCause.INVALID_DATA),
                 Arguments.of("12207", FailureCause.INVALID_FIELD_FORMAT),
-                Arguments.of("12301", FailureCause.REFUSED),
                 Arguments.of("21001", FailureCause.PAYMENT_PARTNER_ERROR),
                 Arguments.of("21002", FailureCause.PAYMENT_PARTNER_ERROR),
                 Arguments.of("21003", FailureCause.PAYMENT_PARTNER_ERROR),
-                Arguments.of("21009", FailureCause.PAYMENT_PARTNER_ERROR),
                 Arguments.of("21999", FailureCause.PAYMENT_PARTNER_ERROR),
                 Arguments.of("21004", FailureCause.PAYMENT_PARTNER_ERROR),
                 Arguments.of("22001", FailureCause.INVALID_DATA),
                 Arguments.of("22002", FailureCause.INVALID_DATA),
-                Arguments.of("22003", FailureCause.INVALID_DATA)
+                Arguments.of("22003", FailureCause.INVALID_DATA),
+                Arguments.of("12006", FailureCause.INVALID_DATA),
+                Arguments.of("12202", FailureCause.INVALID_DATA),
+                Arguments.of("12206", FailureCause.INVALID_DATA)
         );
     }
 

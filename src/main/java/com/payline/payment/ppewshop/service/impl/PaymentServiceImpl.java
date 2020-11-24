@@ -8,6 +8,7 @@ import com.payline.payment.ppewshop.exception.InvalidDataException;
 import com.payline.payment.ppewshop.exception.PluginException;
 import com.payline.payment.ppewshop.service.HttpService;
 import com.payline.payment.ppewshop.utils.Constants;
+import com.payline.payment.ppewshop.utils.GoodsCodeBusiness;
 import com.payline.payment.ppewshop.utils.PluginUtils;
 import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.common.FailureCause;
@@ -99,8 +100,8 @@ public class PaymentServiceImpl implements PaymentService {
                 .build();
 
         MerchantConfiguration merchantConfiguration = MerchantConfiguration.Builder.aMerchantConfiguration()
-                .withGuardBackUrl(request.getEnvironment().getNotificationURL())
-                .withGuardPushUrl(request.getEnvironment().getRedirectionReturnURL())
+                .withGuardBackUrl(request.getEnvironment().getRedirectionReturnURL())
+                .withGuardPushUrl(request.getEnvironment().getNotificationURL())
                 .build();
 
         Buyer buyer = request.getBuyer();
@@ -109,7 +110,7 @@ public class PaymentServiceImpl implements PaymentService {
             throw new InvalidDataException("paymentRequest.buyer.fullName is required");
         }
 
-        if (buyer.getAddresses() == null){
+        if (buyer.getAddresses() == null) {
             throw new InvalidDataException(("paymentRequest.buyer.addresses is required"));
         }
 
@@ -123,7 +124,7 @@ public class PaymentServiceImpl implements PaymentService {
             throw new InvalidDataException("paymentRequest.buyer.birthDate is required");
         }
 
-        if (request.getLocale() == null){
+        if (request.getLocale() == null) {
             throw new InvalidDataException("paymentRequest.locale is required");
         }
 
@@ -144,7 +145,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .build();
 
         OrderInformation orderInformation = OrderInformation.Builder.anOrderInformation()
-                .withGoodsCode(getGoodsCode(getMainCat(request.getOrder().getItems())))
+                .withGoodsCode(GoodsCodeBusiness.getInstance().getGoodsCode(getMainCat(request.getOrder().getItems())))
                 .withPrice(PluginUtils.createStringAmount(request.getAmount().getAmountInSmallestUnit(), request.getAmount().getCurrency()))
                 .withFinancialProductType(OrderInformation.CLA)
                 .build();
@@ -182,16 +183,16 @@ public class PaymentServiceImpl implements PaymentService {
 
         for (Order.OrderItem item : items) {
             // get category and amount values
-            if(item.getCategory() == null){
+            if (item.getCategory() == null) {
                 throw new InvalidDataException("item must contain a category");
             }
 
-            if(item.getAmount() == null || item.getAmount().getAmountInSmallestUnit() == null){
+            if (item.getAmount() == null || item.getAmount().getAmountInSmallestUnit() == null) {
                 throw new InvalidDataException("item must contain an amount");
             }
 
-            if (item.getQuantity() == null){
-                throw new  InvalidDataException("item must contain a quantity");
+            if (item.getQuantity() == null) {
+                throw new InvalidDataException("item must contain a quantity");
             }
             String cat = item.getCategory();
             BigInteger amount = item.getAmount().getAmountInSmallestUnit()
@@ -238,257 +239,6 @@ public class PaymentServiceImpl implements PaymentService {
             default:
                 return "MR";
         }
-    }
-
-    /**
-     * Return a PPEW category mapped from Payline category
-     * 000 codes are for non mappable category
-     *
-     * @param cat Payline category to convert
-     * @return the PPWE goods code
-     */
-    public static String getGoodsCode(String cat) {
-        String goodsCode = null;
-        if (cat != null) {
-            switch (cat) {
-                case "1":
-                case "100010001":
-                    goodsCode = "625";
-                    break;
-                case "100010002":
-                case "100010003":
-                    goodsCode = "626";
-                    break;
-                case "2":
-                    goodsCode = "610";
-                    break;
-                case "20001":
-                    goodsCode = "611";
-                    break;
-                case "200010001":
-                    goodsCode = "624";
-                    break;
-                case "200010002":
-                    goodsCode = "611";
-                    break;
-                case "200010003":
-                    goodsCode = "615";
-                    break;
-                case "200010004":
-                    goodsCode = "623";
-                    break;
-                case "200010005":
-                    goodsCode = "623";
-                    break;
-                case "200010006":
-                    goodsCode = "622";
-                    break;
-                case "200010007":
-                    goodsCode = "613";
-                    break;
-                case "3":
-                    goodsCode = "621";
-                    break;
-                case "4":
-                    goodsCode = "320";
-                    break;
-                case "40001":
-                    goodsCode = "322";
-                    break;
-                case "400010001":
-                    goodsCode = "326";
-                    break;
-                case "400010002":
-                    goodsCode = "327";
-                    break;
-                case "40002":
-                    goodsCode = "320";
-                    break;
-                case "400020001":
-                    goodsCode = "323";
-                    break;
-                case "400020002":
-                    goodsCode = "324";
-                    break;
-                case "400020003":
-                    goodsCode = "329";
-                    break;
-                case "40003":
-                    goodsCode = "328";
-                    break;
-                case "400030001":
-                    goodsCode = "328";
-                    break;
-                case "400030002":
-                    goodsCode = "328";
-                    break;
-                case "5":
-                    goodsCode = "663";
-                    break;
-                case "50001":
-                    goodsCode = "913";
-                    break;
-                case "500010001":
-                    goodsCode = "733";
-                    break;
-                case "50002":
-                    goodsCode = "913";
-                    break;
-                case "50003":
-                    goodsCode = "663";
-                    break;
-                case "500030001":
-                    goodsCode = "737";
-                    break;
-                case "50004":
-                    goodsCode = "663";
-                    break;
-                case "500040001":
-                    goodsCode = "738";
-                    break;
-                case "500040002":
-                    goodsCode = "739";
-                    break;
-                case "500040003":
-                    goodsCode = "740";
-                    break;
-                case "500040004":
-                    goodsCode = "741";
-                    break;
-                case "599990001":
-                    goodsCode = "941";
-                    break;
-                case "599990002":
-                    goodsCode = "912";
-                    break;
-                case "6":
-                    goodsCode = "640";
-                    break;
-                case "7":
-                    goodsCode = "660";
-                    break;
-                case "8":
-                    goodsCode = "730";
-                    break;
-                case "9":
-                    goodsCode = "660";
-                    break;
-                case "10":
-                    goodsCode = "660";
-                    break;
-                case "11":
-                    goodsCode = "660";
-                    break;
-                case "110001":
-                    goodsCode = "742";
-                    break;
-                case "12":
-                    goodsCode = "330";
-                    break;
-                case "120001":
-                    goodsCode = "331";
-                    break;
-                case "1200010001":
-                    goodsCode = "334";
-                    break;
-                case "1200010002":
-                    goodsCode = "336";
-                    break;
-                case "1200010003":
-                    goodsCode = "337";
-                    break;
-                case "1200010004":
-                    goodsCode = "337";
-                    break;
-                case "120002":
-                    goodsCode = "332";
-                    break;
-                case "120003":
-                    goodsCode = "339";
-                    break;
-                case "1200030001":
-                    goodsCode = "338";
-                    break;
-                case "120004":
-                    goodsCode = "341";
-                    break;
-                case "120005":
-                    goodsCode = "340";
-                    break;
-                case "120006":
-                    goodsCode = "343";
-                    break;
-                case "120007":
-                    goodsCode = "342";
-                    break;
-                case "120008":
-                    goodsCode = "330";
-                    break;
-                case "1200080001":
-                    goodsCode = "660";
-                    break;
-                case "13":
-                    goodsCode = "000";
-                    break;
-                case "14":
-                    goodsCode = "660";
-                    break;
-                case "15":
-                    goodsCode = "660";
-                    break;
-                case "16":
-                    goodsCode = "000";
-                    break;
-                case "17":
-                    goodsCode = "000";
-                    break;
-                case "170001":
-                    goodsCode = "000";
-                    break;
-                case "170002":
-                    goodsCode = "000";
-                    break;
-                case "18":
-                    goodsCode = "660";
-                    break;
-                case "19":
-                    goodsCode = "660";
-                    break;
-                case "20":
-                    goodsCode = "631";
-                    break;
-                case "21":
-                    goodsCode = "000";
-                    break;
-                case "22":
-                    goodsCode = "000";
-                    break;
-                case "23":
-                    goodsCode = "000";
-                    break;
-                case "24":
-                    goodsCode = "858";
-                    break;
-                case "240001":
-                    goodsCode = "858";
-                    break;
-                case "2400010001":
-                    goodsCode = "855";
-                    break;
-                case "2400010002":
-                    goodsCode = "857";
-                    break;
-                case "25":
-                    goodsCode = "650";
-                    break;
-                case "26":
-                    goodsCode = "620";
-                    break;
-                default:
-                    goodsCode = "000";
-            }
-        }
-        return goodsCode;
     }
 
 }

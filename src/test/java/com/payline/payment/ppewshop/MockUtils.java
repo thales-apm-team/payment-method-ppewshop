@@ -22,6 +22,8 @@ import org.mockito.internal.util.reflection.FieldSetter;
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.mockito.Mockito.doReturn;
@@ -177,13 +179,18 @@ public class MockUtils {
      * Generate a valid {@link Buyer}.
      */
     public static Buyer aBuyer() {
-        return Buyer.BuyerBuilder.aBuyer()
-                .withFullName(new Buyer.FullName("Marie", "Durand", "1"))
-                .withBirthday(new Date())
-                .withAddresses(addresses())
-                .withPhoneNumbers(phoneNumbers())
-                .withEmail("foo@bar.baz")
-                .build();
+        try {
+            return Buyer.BuyerBuilder.aBuyer()
+                    .withFullName(new Buyer.FullName("Marie", "Durand", "1"))
+                    .withBirthday(new SimpleDateFormat("dd-MM-yyyy").parse("01-01-2020"))
+                    .withAddresses(addresses())
+                    .withPhoneNumbers(phoneNumbers())
+                    .withEmail("foo@bar.baz")
+                    .build();
+        } catch (ParseException e) {
+            // should never append
+            return null;
+        }
     }
 
     public static Map<Buyer.AddressType, Buyer.Address> addresses() {
@@ -267,7 +274,7 @@ public class MockUtils {
                 .withCaptureNow(true)
                 .withContractConfiguration(aContractConfiguration())
                 .withEnvironment(anEnvironment())
-                .withLocale(Locale.getDefault())
+                .withLocale(Locale.FRANCE)
                 .withOrder(aPaylineOrder())
                 .withPartnerConfiguration(aPartnerConfiguration())
                 .withPaymentFormContext(aPaymentFormContext())
