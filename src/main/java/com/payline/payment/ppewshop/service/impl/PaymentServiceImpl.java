@@ -99,8 +99,8 @@ public class PaymentServiceImpl implements PaymentService {
                 .build();
 
         MerchantConfiguration merchantConfiguration = MerchantConfiguration.Builder.aMerchantConfiguration()
-                .withGuardBackUrl(request.getEnvironment().getNotificationURL())
-                .withGuardPushUrl(request.getEnvironment().getRedirectionReturnURL())
+                .withGuardBackUrl(request.getEnvironment().getRedirectionReturnURL())
+                .withGuardPushUrl(request.getEnvironment().getNotificationURL())
                 .build();
 
         Buyer buyer = request.getBuyer();
